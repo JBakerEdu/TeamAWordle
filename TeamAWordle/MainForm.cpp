@@ -16,7 +16,8 @@ int main(array<String^>^ args)
 }
 
 namespace TeamAWordle {
-	
+
+    
 	MainForm::MainForm(void)
     {
         InitializeComponent();
@@ -37,6 +38,19 @@ namespace TeamAWordle {
         this->enterButton->Enabled = false;
         this->backspaceButton->Enabled = false;
     }
+    
+    /**
+    MainForm::MainForm(void)
+    {
+        InitializeComponent();
+        array<String^>^ wordList = gcnew array<String^>{ L"APPLE", L"FRUIT", L"BIRDS" };
+        Random^ rnd = gcnew Random();
+        targetWord = wordList[rnd->Next(wordList->Length)];
+        currentGuess = String::Empty;
+        currentRow = 0;
+        currentCol = 0;
+    }
+    */
 
     MainForm::~MainForm()
     {
@@ -78,10 +92,12 @@ namespace TeamAWordle {
 
     void MainForm::CheckGuess()
     {
+        bool allGreen = true;
         for (int i = 0; i < 5; i++)
         {
             Char guessChar = currentGuess[i];
             Label^ lbl = gridLabels[currentRow * 5 + i];
+
             if (guessChar == targetWord[i])
             {
                 lbl->BackColor = Color::Green;
@@ -89,12 +105,62 @@ namespace TeamAWordle {
             else if (targetWord->Contains(guessChar.ToString()))
             {
                 lbl->BackColor = Color::Yellow;
+                allGreen = false;
             }
             else
             {
                 lbl->BackColor = Color::LightGray;
+                allGreen = false;
             }
         }
+
+        if (allGreen)
+        {
+            GameOver(true);
+        }
+        else if (currentRow == 5)
+        {
+            GameOver(false);
+        }
+    }
+
+    void MainForm::GameOver(bool won)
+    {
+        String^ msg = won
+            ? "Congratulations! You guessed the word.\nPlay again?"
+            : "Game over — the word was: " + targetWord + "\nPlay again?";
+
+        auto result = MessageBox::Show(
+            msg,
+            "Wordle",
+            MessageBoxButtons::YesNo,
+            MessageBoxIcon::Question);
+
+        if (result == System::Windows::Forms::DialogResult::Yes)
+            ResetGame();
+        else
+            this->Close();
+    }
+
+    void MainForm::ResetGame()
+    {
+        WordList wordList("dictionary.txt");
+        std::string sel = wordList.getRandomWord();
+        targetWord = sel.empty()
+            ? gcnew String("error")
+            : gcnew String(sel.c_str());
+
+        for (int i = 0; i < 30; i++)
+        {
+            gridLabels[i]->Text = String::Empty;
+            gridLabels[i]->BackColor = SystemColors::Window;
+        }
+        currentRow = -1;
+        currentCol = 0;
+        currentGuess = String::Empty;
+
+        enterButton->Enabled = false;
+        backspaceButton->Enabled = false;
     }
 }
 

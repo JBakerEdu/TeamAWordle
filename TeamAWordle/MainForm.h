@@ -116,6 +116,8 @@ namespace TeamAWordle
         void OnBackspaceButton_Click(Object^ sender, EventArgs^ e);
         void OnEnterButton_Click(Object^ sender, EventArgs^ e);
         void CheckGuess();
+        void ResetGame();
+        void GameOver(bool won);
         void MainForm_KeyDown(Object^ sender, KeyEventArgs^ e)
         {
             String^ keyStr = e->KeyCode.ToString();
