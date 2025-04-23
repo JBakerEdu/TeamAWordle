@@ -109,6 +109,11 @@ namespace TeamAWordle
             this->keyboardPanel->Controls->Add(this->backspaceButton);
 
             this->Controls->Add(this->keyboardPanel);
+
+            // Ensure Enter key always triggers guess submission
+            this->AcceptButton = this->enterButton;
+            // Clear any control focus so no button is selected by default
+            this->ActiveControl = nullptr;
         }
 #pragma endregion
 
@@ -118,24 +123,33 @@ namespace TeamAWordle
         void CheckGuess();
         void MainForm_KeyDown(Object^ sender, KeyEventArgs^ e)
         {
-            int code = static_cast<int>(e->KeyCode);
-            if (code >= static_cast<int>(Keys::A) && code <= static_cast<int>(Keys::Z))
+            String^ keyStr = e->KeyCode.ToString();
+            if (keyStr->Length == 1 && Char::IsLetter(keyStr[0]))
             {
-                int idx = code - static_cast<int>(Keys::A);
-                OnLetterButton_Click(letterButtons[idx], EventArgs::Empty);
+                keyStr = keyStr->ToUpper();
+                for each (Button ^ btn in letterButtons)
+                {
+                    if (btn->Text->Equals(keyStr))
+                    {
+                        OnLetterButton_Click(btn, EventArgs::Empty);
+                        e->Handled = true;
+                        return;
+                    }
+                }
             }
             else if (e->KeyCode == Keys::Enter)
             {
                 OnEnterButton_Click(this, EventArgs::Empty);
+                e->Handled = true;
+                return;
             }
             else if (e->KeyCode == Keys::Back)
             {
                 OnBackspaceButton_Click(this, EventArgs::Empty);
+                e->Handled = true;
+                return;
             }
-            else
-            {
-                e->SuppressKeyPress = true;
-            }
+            e->SuppressKeyPress = true;
         }
     };
 }

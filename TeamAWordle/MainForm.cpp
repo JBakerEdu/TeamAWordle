@@ -28,6 +28,8 @@ namespace TeamAWordle {
             return;
         }
 
+        MessageBox::Show("The target word is: " + gcnew String(sel.c_str()), "Debug", MessageBoxButtons::OK, MessageBoxIcon::Information);
+
         targetWord = gcnew String(sel.c_str());
         currentGuess = String::Empty;
         currentRow = 0;
