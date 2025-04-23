@@ -43,12 +43,15 @@ namespace TeamAWordle {
     MainForm::MainForm(void)
     {
         InitializeComponent();
+        StartNewGame();
+        /**
         array<String^>^ wordList = gcnew array<String^>{ L"APPLE", L"FRUIT", L"BIRDS" };
         Random^ rnd = gcnew Random();
         targetWord = wordList[rnd->Next(wordList->Length)];
         currentGuess = String::Empty;
         currentRow = 0;
         currentCol = 0;
+        */
     }
 
     MainForm::~MainForm()

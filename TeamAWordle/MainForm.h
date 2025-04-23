@@ -77,9 +77,11 @@ namespace TeamAWordle
             this->letterButtons = gcnew array<Button^>(26);
             int btnIndex = 0;
             int yOffset = 0;
+            int panelWidth = this->keyboardPanel->Width;
             for each (String ^ rowText in rows)
             {
-                int xOffset = 0;
+                int rowLength = rowText->Length;
+                int xOffset = (panelWidth - rowLength * 30) / 2;
                 for each (Char ch in rowText)
                 {
                     Button^ btn = gcnew Button();
