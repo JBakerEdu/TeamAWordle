@@ -1,4 +1,5 @@
 #include "MainForm.h"
+#include "WordList.h"
 
 using namespace System;
 using namespace System::Windows::Forms;
@@ -15,17 +16,19 @@ int main(array<String^>^ args)
 }
 
 namespace TeamAWordle {
-
-    /// <summary>
-    /// This helps with seting up main and calls the init function
-    /// </summary>
-    /// <param name="">void</param>
-    MainForm::MainForm(void)
+	
+	MainForm::MainForm(void)
     {
         InitializeComponent();
-        array<String^>^ wordList = gcnew array<String^>{ L"APPLE", L"FRUIT", L"BIRDS" };
-        Random^ rnd = gcnew Random();
-        targetWord = wordList[rnd->Next(wordList->Length)];
+        WordList wordList("dictionary.txt");
+        std::string sel = wordList.getRandomWord();
+        if (sel.empty()) {
+            MessageBox::Show("Failed to load dictionary or select a word.", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+            this->Close();
+            return;
+        }
+
+        targetWord = gcnew String(sel.c_str());
         currentGuess = String::Empty;
         currentRow = 0;
         currentCol = 0;

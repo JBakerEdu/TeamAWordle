@@ -43,6 +43,8 @@ namespace TeamAWordle
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
             this->ClientSize = System::Drawing::Size(400, 600);
             this->Text = L"Wordle Game";
+            this->KeyPreview = true;
+            this->KeyDown += gcnew KeyEventHandler(this, &MainForm::MainForm_KeyDown);
             this->guessGridPanel = gcnew TableLayoutPanel();
             this->guessGridPanel->ColumnCount = 5;
             this->guessGridPanel->RowCount = 6;
@@ -114,5 +116,26 @@ namespace TeamAWordle
         void OnBackspaceButton_Click(Object^ sender, EventArgs^ e);
         void OnEnterButton_Click(Object^ sender, EventArgs^ e);
         void CheckGuess();
+        void MainForm_KeyDown(Object^ sender, KeyEventArgs^ e)
+        {
+            int code = static_cast<int>(e->KeyCode);
+            if (code >= static_cast<int>(Keys::A) && code <= static_cast<int>(Keys::Z))
+            {
+                int idx = code - static_cast<int>(Keys::A);
+                OnLetterButton_Click(letterButtons[idx], EventArgs::Empty);
+            }
+            else if (e->KeyCode == Keys::Enter)
+            {
+                OnEnterButton_Click(this, EventArgs::Empty);
+            }
+            else if (e->KeyCode == Keys::Back)
+            {
+                OnBackspaceButton_Click(this, EventArgs::Empty);
+            }
+            else
+            {
+                e->SuppressKeyPress = true;
+            }
+        }
     };
 }
