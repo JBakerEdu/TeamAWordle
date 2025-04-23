@@ -9,10 +9,9 @@ WordList::WordList(const std::string& filePath) {
     std::string word;
 
     while (file >> word) {
-        // Normalize to lowercase
+        
         std::transform(word.begin(), word.end(), word.begin(), ::tolower);
 
-        // Accept only alphabetic 5-letter words
         if (word.length() == 5 && std::all_of(word.begin(), word.end(), ::isalpha)) {
             fiveLetterWords.push_back(word);
         }
