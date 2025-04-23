@@ -34,6 +34,8 @@ namespace TeamAWordle {
         currentGuess = String::Empty;
         currentRow = 0;
         currentCol = 0;
+        this->enterButton->Enabled = false;
+        this->backspaceButton->Enabled = false;
     }
 
     MainForm::~MainForm()
@@ -49,6 +51,8 @@ namespace TeamAWordle {
         gridLabels[currentRow * 5 + currentCol]->Text = btn->Text;
         currentGuess += btn->Text;
         currentCol++;
+        this->enterButton->Enabled = (currentCol == 5);
+        this->backspaceButton->Enabled = (currentCol > 0);
     }
 
     void MainForm::OnBackspaceButton_Click(Object^ sender, EventArgs^ e)
@@ -57,6 +61,8 @@ namespace TeamAWordle {
         currentCol--;
         gridLabels[currentRow * 5 + currentCol]->Text = String::Empty;
         currentGuess = currentGuess->Substring(0, currentGuess->Length - 1);
+        this->enterButton->Enabled = false;
+        this->backspaceButton->Enabled = (currentCol > 0);
     }
 
     void MainForm::OnEnterButton_Click(Object^ sender, EventArgs^ e)
@@ -66,6 +72,8 @@ namespace TeamAWordle {
         currentGuess = String::Empty;
         currentCol = 0;
         currentRow++;
+        this->enterButton->Enabled = false;
+        this->backspaceButton->Enabled = false;
     }
 
     void MainForm::CheckGuess()

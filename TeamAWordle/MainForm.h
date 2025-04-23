@@ -109,11 +109,6 @@ namespace TeamAWordle
             this->keyboardPanel->Controls->Add(this->backspaceButton);
 
             this->Controls->Add(this->keyboardPanel);
-
-            // Ensure Enter key always triggers guess submission
-            this->AcceptButton = this->enterButton;
-            // Clear any control focus so no button is selected by default
-            this->ActiveControl = nullptr;
         }
 #pragma endregion
 
