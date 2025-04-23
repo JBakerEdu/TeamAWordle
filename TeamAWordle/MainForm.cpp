@@ -93,6 +93,7 @@ namespace TeamAWordle {
         currentCol++;
         this->enterButton->Enabled = (currentCol == 5);
         this->backspaceButton->Enabled = (currentCol > 0);
+        this->ActiveControl = nullptr;
     }
 
     void MainForm::OnBackspaceButton_Click(Object^ sender, EventArgs^ e)
@@ -112,6 +113,7 @@ namespace TeamAWordle {
         currentGuess = String::Empty;
         currentCol = 0;
         currentRow++;
+        this->ActiveControl = nullptr;
         this->enterButton->Enabled = false;
         this->backspaceButton->Enabled = false;
     }

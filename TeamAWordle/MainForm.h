@@ -91,6 +91,7 @@ namespace TeamAWordle
                     btn->Click += gcnew System::EventHandler(this, &MainForm::OnLetterButton_Click);
                     this->keyboardPanel->Controls->Add(btn);
                     this->letterButtons[btnIndex++] = btn;
+                    btn->TabStop = false;
                     xOffset += 30;
                 }
                 yOffset += 50;
@@ -111,6 +112,7 @@ namespace TeamAWordle
             this->keyboardPanel->Controls->Add(this->backspaceButton);
 
             this->Controls->Add(this->keyboardPanel);
+
         }
 #pragma endregion
 
