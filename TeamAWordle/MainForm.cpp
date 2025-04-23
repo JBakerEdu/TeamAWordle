@@ -17,7 +17,7 @@ int main(array<String^>^ args)
 
 namespace TeamAWordle {
 
-    
+    /**
 	MainForm::MainForm(void)
     {
         InitializeComponent();
@@ -38,8 +38,8 @@ namespace TeamAWordle {
         this->enterButton->Enabled = false;
         this->backspaceButton->Enabled = false;
     }
+    */
     
-    /**
     MainForm::MainForm(void)
     {
         InitializeComponent();
@@ -50,13 +50,36 @@ namespace TeamAWordle {
         currentRow = 0;
         currentCol = 0;
     }
-    */
 
     MainForm::~MainForm()
     {
         if (components)
             delete components;
     }
+
+    void MainForm::StartNewGame()
+	{
+		// Reset the game state
+		currentRow = 0;
+		currentCol = 0;
+		currentGuess = String::Empty;
+
+		// Clear the grid labels
+		for (int i = 0; i < 30; i++)
+		{
+			gridLabels[i]->Text = String::Empty;
+			gridLabels[i]->BackColor = SystemColors::Window;
+		}
+
+		// Enable/disable buttons
+		enterButton->Enabled = false;
+		backspaceButton->Enabled = false;
+
+		// Select a new target word
+		Random^ rnd = gcnew Random();
+		array<String^>^ wordList = gcnew array<String^>{ L"APPLE", L"FRUIT", L"BIRDS" };
+		targetWord = wordList[rnd->Next(wordList->Length)];
+	}
 
     void MainForm::OnLetterButton_Click(Object^ sender, EventArgs^ e)
     {

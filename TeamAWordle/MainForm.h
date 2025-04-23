@@ -42,7 +42,7 @@ namespace TeamAWordle
 
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
             this->ClientSize = System::Drawing::Size(400, 600);
-            this->Text = L"Wordle Game";
+            this->Text = L"Wordle Game Baker and Klamforth";
             this->KeyPreview = true;
             this->KeyDown += gcnew KeyEventHandler(this, &MainForm::MainForm_KeyDown);
             this->guessGridPanel = gcnew TableLayoutPanel();
@@ -117,6 +117,7 @@ namespace TeamAWordle
         void OnEnterButton_Click(Object^ sender, EventArgs^ e);
         void CheckGuess();
         void ResetGame();
+        void StartNewGame();
         void GameOver(bool won);
         void MainForm_KeyDown(Object^ sender, KeyEventArgs^ e)
         {
