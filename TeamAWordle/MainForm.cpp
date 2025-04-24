@@ -44,14 +44,6 @@ namespace TeamAWordle {
     {
         InitializeComponent();
         StartNewGame();
-        /**
-        array<String^>^ wordList = gcnew array<String^>{ L"APPLE", L"FRUIT", L"BIRDS" };
-        Random^ rnd = gcnew Random();
-        targetWord = wordList[rnd->Next(wordList->Length)];
-        currentGuess = String::Empty;
-        currentRow = 0;
-        currentCol = 0;
-        */
     }
 
     MainForm::~MainForm()
@@ -62,23 +54,17 @@ namespace TeamAWordle {
 
     void MainForm::StartNewGame()
 	{
-		// Reset the game state
 		currentRow = 0;
 		currentCol = 0;
 		currentGuess = String::Empty;
 
-		// Clear the grid labels
 		for (int i = 0; i < 30; i++)
 		{
 			gridLabels[i]->Text = String::Empty;
 			gridLabels[i]->BackColor = SystemColors::Window;
 		}
-
-		// Enable/disable buttons
 		enterButton->Enabled = false;
 		backspaceButton->Enabled = false;
-
-		// Select a new target word
 		Random^ rnd = gcnew Random();
 		array<String^>^ wordList = gcnew array<String^>{ L"APPLE", L"FRUIT", L"BIRDS" };
 		targetWord = wordList[rnd->Next(wordList->Length)];
@@ -109,27 +95,30 @@ namespace TeamAWordle {
     void MainForm::OnEnterButton_Click(Object^ sender, EventArgs^ e)
     {
         if (currentCol != 5) return;
-        CheckGuess();
+        bool gameEnded = CheckGuess();
+        if (gameEnded) {
+            return;
+        }
         currentGuess = String::Empty;
         currentCol = 0;
-        currentRow++;
-        this->ActiveControl = nullptr;
-        this->enterButton->Enabled = false;
-        this->backspaceButton->Enabled = false;
+        ++currentRow;
+
+        ActiveControl = nullptr;
+        enterButton->Enabled = false;
+        backspaceButton->Enabled = false;
     }
 
-    void MainForm::CheckGuess()
+    bool MainForm::CheckGuess()
     {
         bool allGreen = true;
-        for (int i = 0; i < 5; i++)
+
+        for (int i = 0; i < 5; ++i)
         {
-            Char guessChar = currentGuess[i];
+            Char  guessChar = currentGuess[i];
             Label^ lbl = gridLabels[currentRow * 5 + i];
 
             if (guessChar == targetWord[i])
-            {
                 lbl->BackColor = Color::Green;
-            }
             else if (targetWord->Contains(guessChar.ToString()))
             {
                 lbl->BackColor = Color::Yellow;
@@ -142,15 +131,14 @@ namespace TeamAWordle {
             }
         }
 
-        if (allGreen)
+        if (allGreen || currentRow == 5)
         {
-            GameOver(true);
+            GameOver(allGreen);
+            return true;
         }
-        else if (currentRow == 5)
-        {
-            GameOver(false);
-        }
+        return false;
     }
+
 
     void MainForm::GameOver(bool won)
     {
@@ -165,30 +153,9 @@ namespace TeamAWordle {
             MessageBoxIcon::Question);
 
         if (result == System::Windows::Forms::DialogResult::Yes)
-            ResetGame();
+            StartNewGame();
         else
             this->Close();
-    }
-
-    void MainForm::ResetGame()
-    {
-        WordList wordList("dictionary.txt");
-        std::string sel = wordList.getRandomWord();
-        targetWord = sel.empty()
-            ? gcnew String("error")
-            : gcnew String(sel.c_str());
-
-        for (int i = 0; i < 30; i++)
-        {
-            gridLabels[i]->Text = String::Empty;
-            gridLabels[i]->BackColor = SystemColors::Window;
-        }
-        currentRow = -1;
-        currentCol = 0;
-        currentGuess = String::Empty;
-
-        enterButton->Enabled = false;
-        backspaceButton->Enabled = false;
     }
 }
 
