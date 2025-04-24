@@ -116,6 +116,9 @@ namespace TeamAWordle
         }
 #pragma endregion
 
+        Button^ FindButtonForLetter(Char letter);
+        void UpdateKeyboardColor(Char letter, Color newColor);
+        void ResetKeyboardColors();
         void OnLetterButton_Click(Object^ sender, EventArgs^ e);
         void OnBackspaceButton_Click(Object^ sender, EventArgs^ e);
         void OnEnterButton_Click(Object^ sender, EventArgs^ e);

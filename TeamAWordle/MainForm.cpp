@@ -68,6 +68,7 @@ namespace TeamAWordle {
 		Random^ rnd = gcnew Random();
 		array<String^>^ wordList = gcnew array<String^>{ L"APPLE", L"FRUIT", L"BIRDS" };
 		targetWord = wordList[rnd->Next(wordList->Length)];
+        ResetKeyboardColors();
 	}
 
     void MainForm::OnLetterButton_Click(Object^ sender, EventArgs^ e)
@@ -114,21 +115,24 @@ namespace TeamAWordle {
 
         for (int i = 0; i < 5; ++i)
         {
-            Char  guessChar = currentGuess[i];
+            Char guessChar = currentGuess[i];
             Label^ lbl = gridLabels[currentRow * 5 + i];
+            Color color;
 
-            if (guessChar == targetWord[i])
-                lbl->BackColor = Color::Green;
-            else if (targetWord->Contains(guessChar.ToString()))
-            {
-                lbl->BackColor = Color::Yellow;
+            if (guessChar == targetWord[i]) {
+                color = Color::Green;
+            }
+            else if (targetWord->Contains(guessChar.ToString())) {
+                color = Color::Gold;
                 allGreen = false;
             }
-            else
-            {
-                lbl->BackColor = Color::LightGray;
+            else {
+                color = Color::LightGray;
                 allGreen = false;
             }
+
+            lbl->BackColor = color;
+            UpdateKeyboardColor(guessChar, color);
         }
 
         if (allGreen || currentRow == 5)
@@ -139,6 +143,39 @@ namespace TeamAWordle {
         return false;
     }
 
+    Button^ MainForm::FindButtonForLetter(Char letter)
+    {
+        for each (Button ^ btn in letterButtons)
+        {
+            if (btn != nullptr && btn->Text->Equals(letter.ToString()))
+                return btn;
+        }
+        return nullptr;
+    }
+
+    void MainForm::UpdateKeyboardColor(Char letter, Color newColor) {
+        Button^ btn = FindButtonForLetter(letter);
+        if (btn == nullptr) return;
+
+        Color existingColor = btn->BackColor;
+
+        if (existingColor == Color::Green)
+            return;
+
+        if (existingColor == Color::Gold && newColor == Color::LightGray)
+            return; 
+
+        btn->BackColor = newColor;
+    }
+
+    void MainForm::ResetKeyboardColors()
+    {
+        for each (Button ^ btn in letterButtons)
+        {
+            if (btn != nullptr)
+                btn->BackColor = SystemColors::Control;
+        }
+    }
 
     void MainForm::GameOver(bool won)
     {
