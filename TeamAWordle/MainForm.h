@@ -4,6 +4,8 @@
 #include "WordList.h"
 #include "GuessValidator.h"
 
+class GameSession;
+
 namespace TeamAWordle
 {
     using namespace System;
@@ -25,9 +27,7 @@ namespace TeamAWordle
         ~MainForm();
 
     private:
-        std::unique_ptr<WordList> wordList_;
-        std::unique_ptr<GuessValidator> validator_;
-        std::string targetWordNative_;
+        GameSession* session_;
 
         System::ComponentModel::Container^ components;
 
@@ -50,7 +50,7 @@ namespace TeamAWordle
 
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
             this->ClientSize = System::Drawing::Size(400, 600);
-            this->Text = L"Wordle Game Baker and Klamforth";
+            this->Text = L"Wordle Game Baker and Klamfoth";
             this->KeyPreview = true;
             this->KeyDown += gcnew KeyEventHandler(this, &MainForm::MainForm_KeyDown);
             this->guessGridPanel = gcnew TableLayoutPanel();

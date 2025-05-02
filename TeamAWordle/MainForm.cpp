@@ -2,6 +2,7 @@
 #include "WordList.h"
 #include "GuessValidator.h"
 #include <msclr/marshal_cppstd.h>
+#include "GameSession.h"
 
 using namespace System;
 using namespace System::Windows::Forms;
@@ -46,30 +47,42 @@ namespace TeamAWordle {
     {
         InitializeComponent();
 
-        wordList_ = std::make_unique<WordList>("dictionary.txt");
-        if (wordList_->getRandomWord().empty())
-        {
-            MessageBox::Show("Failed to load dictionary.txt or it contained no 5 letter words.",
-                "Error",
-                MessageBoxButtons::OK,
-                MessageBoxIcon::Error);
+        try {
+            session_ = new GameSession("dictionary.txt");
+        }
+        catch (const std::exception& ex) {
+            MessageBox::Show(gcnew String(ex.what()), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
             Close();
             return;
         }
-
-        validator_ = std::make_unique<GuessValidator>(*wordList_);
 
         StartNewGame();
     }
 
     MainForm::~MainForm()
     {
-        if (components)
-            delete components;
+        if (components) delete components;
+        delete session_;
     }
 
     void MainForm::StartNewGame()
 	{
+        if (session_ != nullptr)
+        {
+            delete session_;
+            session_ = nullptr;
+        }
+        try
+        {
+            session_ = new GameSession("dictionary.txt");
+        }
+        catch (const std::exception& ex)
+        {
+            MessageBox::Show(gcnew String(ex.what()), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+            this->Close();
+            return;
+        }
+
 		currentRow = 0;
 		currentCol = 0;
 		currentGuess = String::Empty;
@@ -81,8 +94,8 @@ namespace TeamAWordle {
 		}
         ResetKeyboardColors();
 
-        targetWordNative_ = wordList_->getRandomWord();
-        String^ upper = gcnew String(targetWordNative_.c_str());
+        std::string nativeTarget = session_->getTargetWord();
+        String^ upper = gcnew String(nativeTarget.c_str());
         upper = upper->ToUpper();
 
     	this->Tag = upper;
@@ -90,7 +103,7 @@ namespace TeamAWordle {
         enterButton->Enabled = false;
         backspaceButton->Enabled = false;
 
-        // MessageBox::Show("DEBUG Target: " + upper);
+         MessageBox::Show("DEBUG Target: " + upper);
 	}
 
     void MainForm::OnLetterButton_Click(Object^ sender, EventArgs^ e)
@@ -124,7 +137,7 @@ namespace TeamAWordle {
         if (currentCol != 5) return;
 
         std::string guessStd = msclr::interop::marshal_as<std::string>(currentGuess->ToLowerInvariant());
-        GuessValidationResult res = validator_->validateGuess(guessStd);
+        GuessValidationResult res = session_->validate(guessStd);
 
         if (res != GuessValidationResult::Valid)
         {
