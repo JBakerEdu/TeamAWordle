@@ -1,4 +1,10 @@
 #pragma once
+#include <memory>
+#include <msclr/marshal_cppstd.h>
+#include "WordList.h"
+#include "GuessValidator.h"
+
+class GameSession;
 
 namespace TeamAWordle
 {
@@ -21,6 +27,8 @@ namespace TeamAWordle
         ~MainForm();
 
     private:
+        GameSession* session_;
+
         System::ComponentModel::Container^ components;
 
         TableLayoutPanel^ guessGridPanel;
@@ -42,7 +50,7 @@ namespace TeamAWordle
 
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
             this->ClientSize = System::Drawing::Size(400, 600);
-            this->Text = L"Wordle Game Baker and Klamforth";
+            this->Text = L"Wordle Game Baker and Klamfoth";
             this->KeyPreview = true;
             this->KeyDown += gcnew KeyEventHandler(this, &MainForm::MainForm_KeyDown);
             this->guessGridPanel = gcnew TableLayoutPanel();

@@ -1,5 +1,8 @@
 #include "MainForm.h"
 #include "WordList.h"
+#include "GuessValidator.h"
+#include <msclr/marshal_cppstd.h>
+#include "GameSession.h"
 
 using namespace System;
 using namespace System::Windows::Forms;
@@ -43,17 +46,43 @@ namespace TeamAWordle {
     MainForm::MainForm(void)
     {
         InitializeComponent();
+
+        try {
+            session_ = new GameSession("dictionary.txt");
+        }
+        catch (const std::exception& ex) {
+            MessageBox::Show(gcnew String(ex.what()), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+            Close();
+            return;
+        }
+
         StartNewGame();
     }
 
     MainForm::~MainForm()
     {
-        if (components)
-            delete components;
+        if (components) delete components;
+        delete session_;
     }
 
     void MainForm::StartNewGame()
 	{
+        if (session_ != nullptr)
+        {
+            delete session_;
+            session_ = nullptr;
+        }
+        try
+        {
+            session_ = new GameSession("dictionary.txt");
+        }
+        catch (const std::exception& ex)
+        {
+            MessageBox::Show(gcnew String(ex.what()), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+            this->Close();
+            return;
+        }
+
 		currentRow = 0;
 		currentCol = 0;
 		currentGuess = String::Empty;
@@ -63,76 +92,102 @@ namespace TeamAWordle {
 			gridLabels[i]->Text = String::Empty;
 			gridLabels[i]->BackColor = SystemColors::Window;
 		}
-		enterButton->Enabled = false;
-		backspaceButton->Enabled = false;
-		Random^ rnd = gcnew Random();
-		array<String^>^ wordList = gcnew array<String^>{ L"APPLE", L"FRUIT", L"BIRDS" };
-		targetWord = wordList[rnd->Next(wordList->Length)];
         ResetKeyboardColors();
+
+        std::string nativeTarget = session_->getTargetWord();
+        String^ upper = gcnew String(nativeTarget.c_str());
+        upper = upper->ToUpper();
+
+    	this->Tag = upper;
+
+        enterButton->Enabled = false;
+        backspaceButton->Enabled = false;
+
+         MessageBox::Show("DEBUG Target: " + upper);
 	}
 
     void MainForm::OnLetterButton_Click(Object^ sender, EventArgs^ e)
     {
         if (currentCol >= 5 || currentRow >= 6) return;
+
         Button^ btn = safe_cast<Button^>(sender);
         gridLabels[currentRow * 5 + currentCol]->Text = btn->Text;
         currentGuess += btn->Text;
         currentCol++;
-        this->enterButton->Enabled = (currentCol == 5);
+
+    	this->enterButton->Enabled = (currentCol == 5);
         this->backspaceButton->Enabled = (currentCol > 0);
         this->ActiveControl = nullptr;
     }
 
     void MainForm::OnBackspaceButton_Click(Object^ sender, EventArgs^ e)
     {
-        if (currentCol <= 0) return;
-        currentCol--;
+        if (currentCol == 0) return;
+
+    	currentCol--;
         gridLabels[currentRow * 5 + currentCol]->Text = String::Empty;
         currentGuess = currentGuess->Substring(0, currentGuess->Length - 1);
-        this->enterButton->Enabled = false;
+
+    	this->enterButton->Enabled = false;
         this->backspaceButton->Enabled = (currentCol > 0);
     }
 
     void MainForm::OnEnterButton_Click(Object^ sender, EventArgs^ e)
     {
         if (currentCol != 5) return;
-        bool gameEnded = CheckGuess();
-        if (gameEnded) {
+
+        std::string guessStd = msclr::interop::marshal_as<std::string>(currentGuess->ToLowerInvariant());
+        GuessValidationResult res = session_->validate(guessStd);
+
+        if (res != GuessValidationResult::Valid)
+        {
+            String^ msg =
+                (res == GuessValidationResult::NotFiveLetters)
+                ? "Your guess must be exactly 5 letters (A-Z)."
+                : "That word is not in the dictionary";
+
+            MessageBox::Show(msg, "Invalid Guess", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
             return;
         }
+
+    	bool gameEnded = CheckGuess();
+        if (gameEnded) return;
+
         currentGuess = String::Empty;
         currentCol = 0;
         ++currentRow;
 
-        ActiveControl = nullptr;
         enterButton->Enabled = false;
         backspaceButton->Enabled = false;
+        ActiveControl = nullptr;
     }
 
     bool MainForm::CheckGuess()
     {
         bool allGreen = true;
+        String^ targetUpper = safe_cast<String^>(this->Tag);
 
         for (int i = 0; i < 5; ++i)
         {
-            Char guessChar = currentGuess[i];
-            Label^ lbl = gridLabels[currentRow * 5 + i];
-            Color color;
+            Char g = currentGuess[i];
+            Label^ cell = gridLabels[currentRow * 5 + i];
+            Color newColor;
 
-            if (guessChar == targetWord[i]) {
-                color = Color::Green;
-            }
-            else if (targetWord->Contains(guessChar.ToString())) {
-                color = Color::Gold;
+            if (g == targetUpper[i])
+                newColor = Color::Green;
+            else if (targetUpper->Contains(g.ToString())) 
+            {
+                newColor = Color::Gold;
                 allGreen = false;
             }
-            else {
-                color = Color::LightGray;
+            else 
+            {
+                newColor = Color::LightGray;
                 allGreen = false;
             }
 
-            lbl->BackColor = color;
-            UpdateKeyboardColor(guessChar, color);
+            cell->BackColor = newColor;
+            UpdateKeyboardColor(g, newColor);
         }
 
         if (allGreen || currentRow == 5)
