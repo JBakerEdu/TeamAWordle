@@ -1,4 +1,8 @@
 #pragma once
+#include <memory>
+#include <msclr/marshal_cppstd.h>
+#include "WordList.h"
+#include "GuessValidator.h"
 
 namespace TeamAWordle
 {
@@ -21,6 +25,10 @@ namespace TeamAWordle
         ~MainForm();
 
     private:
+        std::unique_ptr<WordList> wordList_;
+        std::unique_ptr<GuessValidator> validator_;
+        std::string targetWordNative_;
+
         System::ComponentModel::Container^ components;
 
         TableLayoutPanel^ guessGridPanel;
