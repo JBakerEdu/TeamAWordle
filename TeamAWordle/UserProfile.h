@@ -8,6 +8,8 @@ public:
 
     const std::string& getUsername() const;
     PlayerStats& getStats();
+    bool saveToFile(const std::string& basePath) const;
+    bool loadFromFile(const std::string& basePath);
 
 private:
     std::string username_;

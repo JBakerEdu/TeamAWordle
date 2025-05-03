@@ -35,6 +35,7 @@ namespace TeamAWordle {
         System::String^ username = prompt->EnteredUsername;
         std::string nativeUsername = msclr::interop::marshal_as<std::string>(username);
         user_ = new UserProfile(nativeUsername);
+        user_->loadFromFile("Profiles");
 
         InitializeComponent();
         allowDoubleLetters_ = SettingsForm::LoadSettingsFromFile();
@@ -66,7 +67,10 @@ namespace TeamAWordle {
         }
 
         delete stats_;
-        delete user_;
+        if (user_ != nullptr) {
+            user_->saveToFile("Profiles");
+            delete user_;
+        }
     }
 
     void MainForm::StartNewGame()
@@ -237,7 +241,7 @@ namespace TeamAWordle {
     {
         int guessesUsed = currentRow + 1;
 
-        stats_->recordGame(won, guessesUsed);
+        user_->getStats().recordGame(won, guessesUsed);
 
         String^ msg = won
             ? "Congratulations! You guessed the word.\nPlay again?"
