@@ -19,33 +19,11 @@ int main(array<String^>^ args)
 }
 
 namespace TeamAWordle {
-
-    /**
-	MainForm::MainForm(void)
-    {
-        InitializeComponent();
-        WordList wordList("dictionary.txt");
-        std::string sel = wordList.getRandomWord();
-        if (sel.empty()) {
-            MessageBox::Show("Failed to load dictionary or select a word.", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
-            this->Close();
-            return;
-        }
-
-        MessageBox::Show("The target word is: " + gcnew String(sel.c_str()), "Debug", MessageBoxButtons::OK, MessageBoxIcon::Information);
-
-        targetWord = gcnew String(sel.c_str());
-        currentGuess = String::Empty;
-        currentRow = 0;
-        currentCol = 0;
-        this->enterButton->Enabled = false;
-        this->backspaceButton->Enabled = false;
-    }
-    */
     
     MainForm::MainForm(void)
     {
         InitializeComponent();
+        allowDoubleLetters_ = SettingsForm::LoadSettingsFromFile();
 
         try {
             session_ = new GameSession("dictionary.txt");
@@ -81,7 +59,7 @@ namespace TeamAWordle {
         }
 
         try {
-            session_ = new GameSession("dictionary.txt");
+            session_ = new GameSession("dictionary.txt", allowDoubleLetters_);
         }
         catch (const std::exception& ex) {
             MessageBox::Show(gcnew String(ex.what()), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);

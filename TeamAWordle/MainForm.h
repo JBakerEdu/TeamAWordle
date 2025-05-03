@@ -3,6 +3,7 @@
 #include <msclr/marshal_cppstd.h>
 #include "WordList.h"
 #include "GuessValidator.h"
+#include "SettingsForm.h"
 
 class GameSession;
 
@@ -41,6 +42,7 @@ namespace TeamAWordle
         String^ currentGuess;
         int currentRow;
         int currentCol;
+        bool allowDoubleLetters_;
 
 #pragma region Windows Form Designer generated code
 
@@ -49,14 +51,43 @@ namespace TeamAWordle
             this->components = gcnew System::ComponentModel::Container();
 
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-            this->ClientSize = System::Drawing::Size(400, 600);
+            this->ClientSize = System::Drawing::Size(400, 650);
             this->Text = L"Wordle Game Baker and Klamfoth";
+
+            Panel^ navBar = gcnew Panel();
+            navBar->Dock = DockStyle::Top;
+            navBar->Height = 50;
+            navBar->BackColor = SystemColors::ControlDark;
+
+            Button^ btnStartNewGame = gcnew Button();
+            btnStartNewGame->Text = "New Game";
+            btnStartNewGame->Location = Point(10, 10);
+            btnStartNewGame->Size = Drawing::Size(90, 30);
+            btnStartNewGame->Click += gcnew EventHandler(this, &MainForm::OnStartNewGame_Click);
+
+            Button^ btnEndGame = gcnew Button();
+            btnEndGame->Text = "End Game";
+            btnEndGame->Location = Point(110, 10);
+            btnEndGame->Size = Drawing::Size(90, 30);
+            btnEndGame->Click += gcnew EventHandler(this, &MainForm::OnEndGame_Click);
+
+            Button^ btnSettings = gcnew Button();
+            btnSettings->Text = "Settings";
+            btnSettings->Size = Drawing::Size(90, 30);
+            btnSettings->Location = Point(300, 10);
+            btnSettings->Click += gcnew EventHandler(this, &MainForm::OnSettings_Click);
+
+            navBar->Controls->Add(btnStartNewGame);
+            navBar->Controls->Add(btnEndGame);
+            navBar->Controls->Add(btnSettings);
+            this->Controls->Add(navBar);
+
             this->KeyPreview = true;
             this->KeyDown += gcnew KeyEventHandler(this, &MainForm::MainForm_KeyDown);
             this->guessGridPanel = gcnew TableLayoutPanel();
             this->guessGridPanel->ColumnCount = 5;
             this->guessGridPanel->RowCount = 6;
-            this->guessGridPanel->Location = System::Drawing::Point(20, 20);
+            this->guessGridPanel->Location = System::Drawing::Point(20, 70);
             this->guessGridPanel->Size = System::Drawing::Size(360, 360);
             for (int i = 0; i < 5; i++) this->guessGridPanel->ColumnStyles->Add(gcnew ColumnStyle(SizeType::Percent, 20));
             for (int i = 0; i < 6; i++) this->guessGridPanel->RowStyles->Add(gcnew RowStyle(SizeType::Percent, 16.66F));
@@ -78,7 +109,7 @@ namespace TeamAWordle
             this->Controls->Add(this->guessGridPanel);
 
             this->keyboardPanel = gcnew Panel();
-            this->keyboardPanel->Location = System::Drawing::Point(20, 400);
+            this->keyboardPanel->Location = System::Drawing::Point(20, 450);
             this->keyboardPanel->Size = System::Drawing::Size(360, 180);
 
             array<String^>^ rows = gcnew array<String^>{ L"QWERTYUIOP", L"ASDFGHJKL", L"ZXCVBNM" };
@@ -162,6 +193,26 @@ namespace TeamAWordle
                 return;
             }
             e->SuppressKeyPress = true;
+        }
+
+        void MainForm::OnSettings_Click(Object^ sender, EventArgs^ e) {
+            SettingsForm^ settingsForm = gcnew SettingsForm(allowDoubleLetters_);
+
+            if (settingsForm->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+                allowDoubleLetters_ = settingsForm->GetAllowDoubleLetters();
+                MessageBox::Show("Settings saved. New games will use updated setting.");
+            }
+            allowDoubleLetters_ = settingsForm->GetAllowDoubleLetters();
+            SettingsForm::SaveSettingsToFile(allowDoubleLetters_);
+            delete settingsForm;
+        }
+
+        void OnStartNewGame_Click(Object^ sender, EventArgs^ e) {
+            StartNewGame();
+        }
+
+        void OnEndGame_Click(Object^ sender, EventArgs^ e) {
+            this->Close();
         }
     };
 }

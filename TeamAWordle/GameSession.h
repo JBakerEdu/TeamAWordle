@@ -6,7 +6,7 @@
 
 class GameSession {
 public:
-    GameSession(const std::string& dictionaryPath);
+    GameSession(const std::string& dictionaryPath, bool allowDoubleLetters = false);
 
     std::string getTargetWord() const;
     GuessValidationResult validate(const std::string& guess) const;
