@@ -61,50 +61,56 @@ namespace TeamAWordle {
 
     MainForm::~MainForm()
     {
-        if (components) delete components;
-        delete session_;
-    }
-
-    void MainForm::StartNewGame()
-	{
-        if (session_ != nullptr)
-        {
+        if (session_ != nullptr) {
             delete session_;
             session_ = nullptr;
         }
-        try
-        {
+
+        if (components != nullptr) {
+            delete components;
+            components = nullptr;
+        }
+    }
+
+
+    void MainForm::StartNewGame()
+    {
+        if (session_ != nullptr) {
+            delete session_;
+            session_ = nullptr;
+        }
+
+        try {
             session_ = new GameSession("dictionary.txt");
         }
-        catch (const std::exception& ex)
-        {
+        catch (const std::exception& ex) {
             MessageBox::Show(gcnew String(ex.what()), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
             this->Close();
             return;
         }
 
-		currentRow = 0;
-		currentCol = 0;
-		currentGuess = String::Empty;
+        currentRow = 0;
+        currentCol = 0;
+        currentGuess = String::Empty;
 
-		for (int i = 0; i < 30; i++)
-		{
-			gridLabels[i]->Text = String::Empty;
-			gridLabels[i]->BackColor = SystemColors::Window;
-		}
+        for (int i = 0; i < 30; i++) {
+            gridLabels[i]->Text = String::Empty;
+            gridLabels[i]->BackColor = SystemColors::Window;
+        }
+
         ResetKeyboardColors();
 
         std::string nativeTarget = session_->getTargetWord();
         String^ upper = gcnew String(nativeTarget.c_str());
         upper = upper->ToUpper();
 
-    	this->Tag = upper;
-
+        this->Tag = upper;
         enterButton->Enabled = false;
         backspaceButton->Enabled = false;
 
-         MessageBox::Show("DEBUG Target: " + upper);
-	}
+        MessageBox::Show("DEBUG Target: " + upper);
+    }
+
 
     void MainForm::OnLetterButton_Click(Object^ sender, EventArgs^ e)
     {
