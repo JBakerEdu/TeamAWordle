@@ -79,15 +79,15 @@ namespace TeamAWordle {
 
         ResetKeyboardColors();
 
-        std::string nativeTarget = session_->getTargetWord();
-        String^ upper = gcnew String(nativeTarget.c_str());
-        upper = upper->ToUpper();
+        std::string tempTarget = session_->getTargetWord();
+        String^ upperCase = gcnew String(tempTarget.c_str());
+        targetWord = upperCase->ToUpper();
 
-        this->Tag = upper;
+        this->Tag = targetWord;
         enterButton->Enabled = false;
         backspaceButton->Enabled = false;
 
-        MessageBox::Show("DEBUG Target: " + upper);
+        MessageBox::Show("DEBUG Target: " + targetWord);
     }
 
 
@@ -218,13 +218,9 @@ namespace TeamAWordle {
 
     void MainForm::GameOver(bool won)
     {
-        std::string nativeTarget = session_->getTargetWord();
-        String^ upper = gcnew String(nativeTarget.c_str());
-        upper = upper->ToUpper();
-
         String^ msg = won
             ? "Congratulations! You guessed the word.\nPlay again?"
-            : "Game over — the word was: " + upper + "\nPlay again?";
+            : "Game over — the word was: " + targetWord + "\nPlay again?";
 
         auto result = MessageBox::Show(
             msg,
