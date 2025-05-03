@@ -7,6 +7,7 @@
 
 class GameSession;
 class PlayerStats;
+class UserProfile;
 
 namespace TeamAWordle
 {
@@ -31,6 +32,7 @@ namespace TeamAWordle
     private:
         GameSession* session_;
         PlayerStats* stats_;
+        UserProfile* user_;
 
         System::ComponentModel::Container^ components;
 

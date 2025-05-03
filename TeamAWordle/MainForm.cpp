@@ -4,6 +4,8 @@
 #include <msclr/marshal_cppstd.h>
 #include "GameSession.h"
 #include "PlayerStats.h"
+#include "UserProfile.h"
+#include "UsernameForm.h"
 
 using namespace System;
 using namespace System::Windows::Forms;
@@ -23,6 +25,17 @@ namespace TeamAWordle {
     
     MainForm::MainForm(void)
     {
+        UsernameForm^ prompt = gcnew UsernameForm();
+        if (prompt->ShowDialog() != System::Windows::Forms::DialogResult::OK)
+        {
+            this->Close();
+            return;
+        }
+
+        System::String^ username = prompt->EnteredUsername;
+        std::string nativeUsername = msclr::interop::marshal_as<std::string>(username);
+        user_ = new UserProfile(nativeUsername);
+
         InitializeComponent();
         allowDoubleLetters_ = SettingsForm::LoadSettingsFromFile();
         SettingsForm::LoadColorsFromFile(correctColor_, presentColor_, wrongColor_);
@@ -53,6 +66,7 @@ namespace TeamAWordle {
         }
 
         delete stats_;
+        delete user_;
     }
 
     void MainForm::StartNewGame()

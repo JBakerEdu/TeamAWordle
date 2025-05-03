@@ -1,4 +1,4 @@
 allowDoubleLetters=false
-correctColor=-128
+correctColor=-16711936
 presentColor=-32576
 wrongColor=-8388353

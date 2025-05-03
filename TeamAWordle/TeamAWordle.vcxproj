@@ -125,6 +125,8 @@
     <ClCompile Include="MainForm.cpp" />
     <ClCompile Include="PlayerStats.cpp" />
     <ClCompile Include="SettingsForm.cpp" />
+    <ClCompile Include="UsernameForm.cpp" />
+    <ClCompile Include="UserProfile.cpp" />
     <ClCompile Include="WordList.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +137,8 @@
     </ClInclude>
     <ClInclude Include="PlayerStats.h" />
     <ClInclude Include="SettingsForm.h" />
+    <ClInclude Include="UsernameForm.h" />
+    <ClInclude Include="UserProfile.h" />
     <ClInclude Include="WordList.h" />
   </ItemGroup>
   <ItemGroup>
