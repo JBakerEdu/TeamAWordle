@@ -43,6 +43,10 @@ namespace TeamAWordle
         int currentRow;
         int currentCol;
         bool allowDoubleLetters_;
+        System::Drawing::Color correctColor_;
+        System::Drawing::Color presentColor_;
+        System::Drawing::Color wrongColor_;
+
 
 #pragma region Windows Form Designer generated code
 
@@ -200,12 +204,25 @@ namespace TeamAWordle
 
             if (settingsForm->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
                 allowDoubleLetters_ = settingsForm->GetAllowDoubleLetters();
-                MessageBox::Show("Settings saved. New games will use updated setting.");
+
+                // THIS IS REQUIRED
+                correctColor_ = settingsForm->GetCorrectColor();
+                presentColor_ = settingsForm->GetPresentColor();
+                wrongColor_ = settingsForm->GetWrongColor();
+
+                SettingsForm::SaveSettingsToFile(
+                    allowDoubleLetters_,
+                    correctColor_,
+                    presentColor_,
+                    wrongColor_
+                );
+
+                MessageBox::Show("Settings saved.");
             }
-            allowDoubleLetters_ = settingsForm->GetAllowDoubleLetters();
-            SettingsForm::SaveSettingsToFile(allowDoubleLetters_);
+
             delete settingsForm;
         }
+
 
         void OnStartNewGame_Click(Object^ sender, EventArgs^ e) {
             StartNewGame();

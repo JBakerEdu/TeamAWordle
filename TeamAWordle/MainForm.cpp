@@ -24,6 +24,8 @@ namespace TeamAWordle {
     {
         InitializeComponent();
         allowDoubleLetters_ = SettingsForm::LoadSettingsFromFile();
+        SettingsForm::LoadColorsFromFile(correctColor_, presentColor_, wrongColor_);
+
 
         try {
             session_ = new GameSession("dictionary.txt");
@@ -49,7 +51,6 @@ namespace TeamAWordle {
             components = nullptr;
         }
     }
-
 
     void MainForm::StartNewGame()
     {
@@ -158,18 +159,17 @@ namespace TeamAWordle {
             Color newColor;
 
             if (g == targetUpper[i])
-                newColor = Color::Green;
-            else if (targetUpper->Contains(g.ToString())) 
+                newColor = correctColor_;
+            else if (targetUpper->Contains(g.ToString()))
             {
-                newColor = Color::Gold;
+                newColor = presentColor_;
                 allGreen = false;
             }
-            else 
+            else
             {
-                newColor = Color::LightGray;
+                newColor = wrongColor_;
                 allGreen = false;
             }
-
             cell->BackColor = newColor;
             UpdateKeyboardColor(g, newColor);
         }
@@ -198,11 +198,11 @@ namespace TeamAWordle {
 
         Color existingColor = btn->BackColor;
 
-        if (existingColor == Color::Green)
+        if (existingColor.ToArgb() == correctColor_.ToArgb())
             return;
 
-        if (existingColor == Color::Gold && newColor == Color::LightGray)
-            return; 
+        if (existingColor.ToArgb() == presentColor_.ToArgb() && newColor.ToArgb() == wrongColor_.ToArgb())
+            return;
 
         btn->BackColor = newColor;
     }

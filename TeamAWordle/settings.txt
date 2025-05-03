@@ -1,1 +1,4 @@
 allowDoubleLetters=false
+correctColor=-128
+presentColor=-32576
+wrongColor=-8388353
