@@ -3,6 +3,7 @@
 #include "GuessValidator.h"
 #include <msclr/marshal_cppstd.h>
 #include "GameSession.h"
+#include "PlayerStats.h"
 
 using namespace System;
 using namespace System::Windows::Forms;
@@ -25,7 +26,7 @@ namespace TeamAWordle {
         InitializeComponent();
         allowDoubleLetters_ = SettingsForm::LoadSettingsFromFile();
         SettingsForm::LoadColorsFromFile(correctColor_, presentColor_, wrongColor_);
-
+        stats_ = new PlayerStats();
 
         try {
             session_ = new GameSession("dictionary.txt");
@@ -50,6 +51,8 @@ namespace TeamAWordle {
             delete components;
             components = nullptr;
         }
+
+        delete stats_;
     }
 
     void MainForm::StartNewGame()
@@ -218,6 +221,10 @@ namespace TeamAWordle {
 
     void MainForm::GameOver(bool won)
     {
+        int guessesUsed = currentRow + 1;
+
+        stats_->recordGame(won, guessesUsed);
+
         String^ msg = won
             ? "Congratulations! You guessed the word.\nPlay again?"
             : "Game over — the word was: " + targetWord + "\nPlay again?";

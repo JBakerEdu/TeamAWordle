@@ -6,6 +6,7 @@
 #include "SettingsForm.h"
 
 class GameSession;
+class PlayerStats;
 
 namespace TeamAWordle
 {
@@ -29,6 +30,7 @@ namespace TeamAWordle
 
     private:
         GameSession* session_;
+        PlayerStats* stats_;
 
         System::ComponentModel::Container^ components;
 
