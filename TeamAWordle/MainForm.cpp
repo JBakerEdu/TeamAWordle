@@ -218,9 +218,13 @@ namespace TeamAWordle {
 
     void MainForm::GameOver(bool won)
     {
+        std::string nativeTarget = session_->getTargetWord();
+        String^ upper = gcnew String(nativeTarget.c_str());
+        upper = upper->ToUpper();
+
         String^ msg = won
             ? "Congratulations! You guessed the word.\nPlay again?"
-            : "Game over — the word was: " + targetWord + "\nPlay again?";
+            : "Game over — the word was: " + upper + "\nPlay again?";
 
         auto result = MessageBox::Show(
             msg,
