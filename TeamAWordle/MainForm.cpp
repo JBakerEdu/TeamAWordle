@@ -1,5 +1,4 @@
-#include "MainForm.h"
-#include "WordList.h"
+﻿#include "MainForm.h"
 #include "GuessValidator.h"
 #include <msclr/marshal_cppstd.h>
 #include "GameSession.h"
@@ -41,6 +40,8 @@ namespace TeamAWordle {
         InitializeComponent();
         allowDoubleLetters_ = SettingsForm::LoadSettingsFromFile();
         SettingsForm::LoadColorsFromFile(correctColor_, presentColor_, wrongColor_);
+        selectedMode_ = SettingsForm::LoadGameModeFromFile();
+        modeController_ = new GameModeController(selectedMode_);
 
         try {
             session_ = new GameSession("dictionary.txt");
@@ -50,7 +51,6 @@ namespace TeamAWordle {
             Close();
             return;
         }
-
         StartNewGame();
     }
 
@@ -59,6 +59,11 @@ namespace TeamAWordle {
         if (session_ != nullptr) {
             delete session_;
             session_ = nullptr;
+        }
+
+        if (modeController_ != nullptr) {
+            delete modeController_;
+            modeController_ = nullptr;
         }
 
         if (components != nullptr) {
@@ -78,6 +83,11 @@ namespace TeamAWordle {
             delete session_;
             session_ = nullptr;
         }
+        if (modeController_ != nullptr) {
+            delete modeController_;
+            modeController_ = nullptr;
+        }
+        modeController_ = new GameModeController(selectedMode_);
 
         try {
             session_ = new GameSession("dictionary.txt", allowDoubleLetters_);
@@ -98,18 +108,44 @@ namespace TeamAWordle {
         }
 
         ResetKeyboardColors();
-
-        std::string nativeTarget = session_->getTargetWord();
-        String^ upper = gcnew String(nativeTarget.c_str());
-        upper = upper->ToUpper();
-
-        this->Tag = upper;
+        std::string tempTarget = session_->getTargetWord();
+        String^ upperCase = gcnew String(tempTarget.c_str());
+        targetWord = upperCase->ToUpper();
+        this->Tag = targetWord;
         enterButton->Enabled = false;
         backspaceButton->Enabled = false;
 
-        MessageBox::Show("DEBUG Target: " + upper);
-    }
+        for each (Label ^ lbl in memorySummaryLabels) {
+            lbl->Text = "";
+            lbl->Visible = false;
+        }
 
+        if (selectedMode_ == GameMode::Lightning) {
+            lightningSecondsRemaining_ = 60;
+            lightningTimerLabel_->Text = "Time: 60s";
+            lightningTimerLabel_->ForeColor = System::Drawing::Color::Black;
+            lightningTimerLabel_->Visible = true;
+            lightningTimer_->Start();
+        }
+        else {
+            lightningTimer_->Stop();
+            lightningTimerLabel_->Visible = false;
+        }
+
+
+
+
+
+        ///This will need to be in consol not here.... should use ifDef
+        MessageBox::Show("DEBUG Target: " + targetWord);
+
+
+
+
+
+
+
+    }
 
     void MainForm::OnLetterButton_Click(Object^ sender, EventArgs^ e)
     {
@@ -167,39 +203,86 @@ namespace TeamAWordle {
         ActiveControl = nullptr;
     }
 
-    bool MainForm::CheckGuess()
-    {
-        bool allGreen = true;
-        String^ targetUpper = safe_cast<String^>(this->Tag);
+    bool MainForm::CheckGuess() {
+        if (currentGuess->Length != 5)
+            return false;
 
-        for (int i = 0; i < 5; ++i)
-        {
-            Char g = currentGuess[i];
-            Label^ cell = gridLabels[currentRow * 5 + i];
-            Color newColor;
+        String^ guessStr = currentGuess;
+        String^ targetStr = targetWord;
 
-            if (g == targetUpper[i])
-                newColor = correctColor_;
-            else if (targetUpper->Contains(g.ToString()))
-            {
-                newColor = presentColor_;
-                allGreen = false;
-            }
-            else
-            {
-                newColor = wrongColor_;
-                allGreen = false;
-            }
-            cell->BackColor = newColor;
-            UpdateKeyboardColor(g, newColor);
+        std::string guess = msclr::interop::marshal_as<std::string>(guessStr->ToLowerInvariant());
+        std::string target = msclr::interop::marshal_as<std::string>(targetStr->ToLowerInvariant());
+
+        FeedbackResult feedback = modeController_->EvaluateGuess(guess, target);
+
+        if (modeController_->GetMode() == GameMode::Memory) {
+            std::string guessStd = msclr::interop::marshal_as<std::string>(currentGuess->ToLowerInvariant());
+            std::string targetStd = msclr::interop::marshal_as<std::string>(targetWord->ToLowerInvariant());
+            bool isCorrect = (guessStd == targetStd);
+
+            ApplyMemoryModeFeedback(feedback, isCorrect);
         }
 
-        if (allGreen || currentRow == 5)
-        {
-            GameOver(allGreen);
+        else {
+            for (int i = 0; i < 5; ++i) {
+                Label^ cell = gridLabels[currentRow * 5 + i];
+                Color newColor;
+
+                switch (feedback.perLetterColors[i]) {
+                case 2: newColor = correctColor_; break;
+                case 1: newColor = presentColor_; break;
+                default: newColor = wrongColor_; break;
+                }
+
+                cell->BackColor = newColor;
+                UpdateKeyboardColor(currentGuess[i], newColor);
+            }
+        }
+
+        if (guess == target || currentRow == 5) {
+            if (selectedMode_ == GameMode::Lightning) {
+                lightningTimer_->Stop();
+            }
+            GameOver(guess == target);
             return true;
         }
+
         return false;
+    }
+
+    void MainForm::ApplyMemoryModeFeedback(const FeedbackResult& feedback, bool isCorrect) {
+        if (isCorrect) {
+            for (int i = 0; i < 5; ++i) {
+                Label^ cell = gridLabels[currentRow * 5 + i];
+                cell->BackColor = correctColor_;
+                UpdateKeyboardColor(currentGuess[i], correctColor_);
+            }
+        }
+        else {
+            if (currentRow < memorySummaryLabels->Count) {
+                Label^ summaryLabel = memorySummaryLabels[currentRow];
+                summaryLabel->Text = gcnew String(feedback.memorySummary.c_str());
+                summaryLabel->Visible = true;
+            }
+        }
+    }
+
+    void MainForm::OnLightningTimerTick(Object^ sender, EventArgs^ e) {
+        lightningSecondsRemaining_--;
+
+        if (lightningSecondsRemaining_ <= 0) {
+            lightningTimer_->Stop();
+
+            lightningTimerLabel_->Text = "Time is up!";
+            GameOver(false);
+            return;
+        }
+
+        if (lightningSecondsRemaining_ <= 10) {
+            lightningTimerLabel_->ForeColor = Color::Red;
+        }
+
+        lightningTimerLabel_->Text = "Time: " + lightningSecondsRemaining_.ToString() + "s";
     }
 
     Button^ MainForm::FindButtonForLetter(Char letter)
@@ -247,7 +330,7 @@ namespace TeamAWordle {
 
         String^ msg = won
             ? "Congratulations! You guessed the word.\nPlay again?"
-            : "Game over � the word was: " + targetWord + "\nPlay again?";
+            : "Game over — the word was: " + targetWord + "\nPlay again?";
 
         auto result = MessageBox::Show(
             msg,
