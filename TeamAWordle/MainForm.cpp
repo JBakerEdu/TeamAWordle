@@ -24,7 +24,9 @@ namespace TeamAWordle {
         InitializeComponent();
         allowDoubleLetters_ = SettingsForm::LoadSettingsFromFile();
         SettingsForm::LoadColorsFromFile(correctColor_, presentColor_, wrongColor_);
-        modeController_ = new GameModeController(GameMode::Memory);
+        selectedMode_ = SettingsForm::LoadGameModeFromFile();
+        modeController_ = new GameModeController(selectedMode_);
+
         try {
             session_ = new GameSession("dictionary.txt");
         }
@@ -60,6 +62,11 @@ namespace TeamAWordle {
             delete session_;
             session_ = nullptr;
         }
+        if (modeController_ != nullptr) {
+            delete modeController_;
+            modeController_ = nullptr;
+        }
+        modeController_ = new GameModeController(selectedMode_);
 
         try {
             session_ = new GameSession("dictionary.txt", allowDoubleLetters_);

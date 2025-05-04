@@ -47,7 +47,7 @@ namespace TeamAWordle
         Color presentColor_;
         Color wrongColor_;
         Generic::List<Label^>^ memorySummaryLabels;
-
+        GameMode selectedMode_;
 
 
 #pragma region Windows Form Designer generated code
@@ -94,13 +94,12 @@ namespace TeamAWordle
             this->guessGridPanel->ColumnCount = 5;
             this->guessGridPanel->RowCount = 12;
             this->guessGridPanel->Location = Point(20, 70);
-            this->guessGridPanel->Size = Drawing::Size(360, 480); // slightly increased for spacing
+            this->guessGridPanel->Size = Drawing::Size(360, 480);
 
-            // Set columns to 20% each
             for (int i = 0; i < 5; i++)
+            {
                 this->guessGridPanel->ColumnStyles->Add(gcnew ColumnStyle(SizeType::Percent, 20));
-
-            // Alternate row heights: 60px for guess rows, 10px for summary/spacing
+            }
             for (int i = 0; i < 12; i++) {
                 float height = (i % 2 == 0) ? 60.0f : 20.0f;
                 this->guessGridPanel->RowStyles->Add(gcnew RowStyle(SizeType::Absolute, height));
@@ -110,7 +109,6 @@ namespace TeamAWordle
             this->memorySummaryLabels = gcnew System::Collections::Generic::List<Label^>();
 
             for (int r = 0; r < 6; r++) {
-                // Add 5 guess cells in even-numbered rows
                 for (int c = 0; c < 5; c++) {
                     int idx = r * 5 + c;
                     Label^ lbl = gcnew Label();
@@ -122,7 +120,6 @@ namespace TeamAWordle
                     this->gridLabels[idx] = lbl;
                 }
 
-                // Add summary label in odd-numbered row below each guess row
                 Label^ summaryLbl = gcnew Label();
                 summaryLbl->Text = "Feed Back Label";
                 summaryLbl->Visible = true;
@@ -226,7 +223,7 @@ namespace TeamAWordle
         }
 
         void MainForm::OnSettings_Click(Object^ sender, EventArgs^ e) {
-            SettingsForm^ settingsForm = gcnew SettingsForm(allowDoubleLetters_);
+            SettingsForm^ settingsForm = gcnew SettingsForm(allowDoubleLetters_, selectedMode_);
 
             if (settingsForm->ShowDialog() == Windows::Forms::DialogResult::OK) {
                 allowDoubleLetters_ = settingsForm->GetAllowDoubleLetters();
@@ -234,12 +231,22 @@ namespace TeamAWordle
                 presentColor_ = settingsForm->GetPresentColor();
                 wrongColor_ = settingsForm->GetWrongColor();
 
-                SettingsForm::SaveSettingsToFile(allowDoubleLetters_, correctColor_, presentColor_, wrongColor_);
-                MessageBox::Show("Settings saved.");
+                selectedMode_ = settingsForm->GetSelectedGameMode();
+
+                if (modeController_ != nullptr) {
+                    delete modeController_;
+                }
+                modeController_ = new GameModeController(selectedMode_);
+
+                SettingsForm::SaveSettingsToFile(allowDoubleLetters_, correctColor_, presentColor_, wrongColor_, selectedMode_);
+
+                MessageBox::Show("Settings saved. A new game will now begin with the new settings applied.");
+                StartNewGame();
             }
 
             delete settingsForm;
         }
+
 
         void OnStartNewGame_Click(Object^ sender, EventArgs^ e) {
             StartNewGame();

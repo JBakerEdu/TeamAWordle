@@ -45,7 +45,7 @@ GameMode TeamAWordle::SettingsForm::LoadGameModeFromFile() {
             }
         }
     }
-    return GameMode::Original; // Default fallback
+    return GameMode::Original;
 }
 
 
@@ -55,7 +55,8 @@ void TeamAWordle::SettingsForm::SaveSettingsToFile(bool allowDoubleLetters, Syst
     writer->WriteLine("correctColor=" + correct.ToArgb());
     writer->WriteLine("presentColor=" + present.ToArgb());
     writer->WriteLine("wrongColor=" + wrong.ToArgb());
-    writer->WriteLine("gameMode=" + static_cast<int>(mode));
+    writer->WriteLine("gameMode=" + static_cast<int>(mode).ToString());
+
     writer->Close();
 }
 

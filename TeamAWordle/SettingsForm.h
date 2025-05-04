@@ -6,8 +6,18 @@ namespace TeamAWordle {
     public ref class SettingsForm : public System::Windows::Forms::Form {
     public:
         static void LoadColorsFromFile(System::Drawing::Color% correct, System::Drawing::Color% present, System::Drawing::Color% wrong);
+        static GameMode TeamAWordle::SettingsForm::LoadGameModeFromFile();
 
-        SettingsForm(bool allowDoubleLetters) {
+        GameMode GetSelectedGameMode() {
+            switch (cmbGameMode->SelectedIndex) {
+            case 1: return GameMode::Hard;
+            case 2: return GameMode::Lightning;
+            case 3: return GameMode::Memory;
+            default: return GameMode::Original;
+            }
+        }
+
+        SettingsForm(bool allowDoubleLetters, GameMode currentMode) {
             LoadColorsFromFile(correctColor, presentColor, wrongColor);
 
             chkAllowDoubleLetters = gcnew System::Windows::Forms::CheckBox();
@@ -29,7 +39,8 @@ namespace TeamAWordle {
             cmbGameMode->Items->AddRange(gcnew cli::array<Object^> {
                 "Original", "Hard", "Lightning", "Memory"
             });
-            cmbGameMode->SelectedIndex = 0;
+            cmbGameMode->SelectedIndex = static_cast<int>(currentMode);
+
 
             this->Controls->Add(cmbGameMode);
 
@@ -113,7 +124,7 @@ namespace TeamAWordle {
         System::Windows::Forms::Button^ btnPresentColor;
         System::Windows::Forms::Button^ btnWrongColor;
         System::Windows::Forms::ComboBox^ cmbGameMode;
-        GameMode TeamAWordle::SettingsForm::LoadGameModeFromFile();
+        
 
         System::Drawing::Color correctColor;
         System::Drawing::Color presentColor;
