@@ -1,4 +1,4 @@
-#include "MainForm.h"
+﻿#include "MainForm.h"
 #include "GuessValidator.h"
 #include <msclr/marshal_cppstd.h>
 #include "GameSession.h"
@@ -24,9 +24,7 @@ namespace TeamAWordle {
         InitializeComponent();
         allowDoubleLetters_ = SettingsForm::LoadSettingsFromFile();
         SettingsForm::LoadColorsFromFile(correctColor_, presentColor_, wrongColor_);
-        modeController_ = new GameModeController(GameMode::Hard);
-
-
+        modeController_ = new GameModeController(GameMode::Memory);
         try {
             session_ = new GameSession("dictionary.txt");
         }
@@ -82,15 +80,24 @@ namespace TeamAWordle {
         }
 
         ResetKeyboardColors();
-
         std::string tempTarget = session_->getTargetWord();
         String^ upperCase = gcnew String(tempTarget.c_str());
         targetWord = upperCase->ToUpper();
-
         this->Tag = targetWord;
         enterButton->Enabled = false;
         backspaceButton->Enabled = false;
 
+        for each (Label ^ lbl in memorySummaryLabels) {
+            lbl->Text = "";
+            lbl->Visible = false;
+        }
+
+
+
+
+
+
+        ///This will need to be in consol not here.... should use ifDef
         MessageBox::Show("DEBUG Target: " + targetWord);
     }
 
@@ -151,49 +158,12 @@ namespace TeamAWordle {
         ActiveControl = nullptr;
     }
 
-    /**
-    bool MainForm::CheckGuess()
-    {
-        bool allGreen = true;
-        String^ targetUpper = safe_cast<String^>(this->Tag);
-
-        for (int i = 0; i < 5; ++i)
-        {
-            Char g = currentGuess[i];
-            Label^ cell = gridLabels[currentRow * 5 + i];
-            Color newColor;
-
-            if (g == targetUpper[i])
-                newColor = correctColor_;
-            else if (targetUpper->Contains(g.ToString()))
-            {
-                newColor = presentColor_;
-                allGreen = false;
-            }
-            else
-            {
-                newColor = wrongColor_;
-                allGreen = false;
-            }
-            cell->BackColor = newColor;
-            UpdateKeyboardColor(g, newColor);
-        }
-
-        if (allGreen || currentRow == 5)
-        {
-            GameOver(allGreen);
-            return true;
-        }
-        return false;
-    }
-    */
-
     bool MainForm::CheckGuess() {
         if (currentGuess->Length != 5)
             return false;
 
-        System::String^ guessStr = currentGuess;
-        System::String^ targetStr = targetWord;
+        String^ guessStr = currentGuess;
+        String^ targetStr = targetWord;
 
         std::string guess = msclr::interop::marshal_as<std::string>(guessStr->ToLowerInvariant());
         std::string target = msclr::interop::marshal_as<std::string>(targetStr->ToLowerInvariant());
@@ -201,8 +171,13 @@ namespace TeamAWordle {
         FeedbackResult feedback = modeController_->EvaluateGuess(guess, target);
 
         if (modeController_->GetMode() == GameMode::Memory) {
-            MessageBox::Show(gcnew String(feedback.memorySummary.c_str()), "Feedback", MessageBoxButtons::OK, MessageBoxIcon::Information);
+            std::string guessStd = msclr::interop::marshal_as<std::string>(currentGuess->ToLowerInvariant());
+            std::string targetStd = msclr::interop::marshal_as<std::string>(targetWord->ToLowerInvariant());
+            bool isCorrect = (guessStd == targetStd);
+
+            ApplyMemoryModeFeedback(feedback, isCorrect);
         }
+
         else {
             for (int i = 0; i < 5; ++i) {
                 Label^ cell = gridLabels[currentRow * 5 + i];
@@ -225,12 +200,35 @@ namespace TeamAWordle {
         }
 
         if (currentRow == 5) {
-            GameOver(true);
+            GameOver(false);
             return true;
         }
 
         return false;
     }
+
+    void MainForm::ApplyMemoryModeFeedback(const FeedbackResult& feedback, bool isCorrect) {
+        if (isCorrect) {
+            for (int i = 0; i < 5; ++i) {
+                Label^ cell = gridLabels[currentRow * 5 + i];
+                cell->BackColor = correctColor_;
+                UpdateKeyboardColor(currentGuess[i], correctColor_);
+            }
+        }
+        else {
+            if (currentRow < memorySummaryLabels->Count) {
+                Label^ summaryLabel = memorySummaryLabels[currentRow];
+                summaryLabel->Text = gcnew String(feedback.memorySummary.c_str());
+                summaryLabel->Visible = true;
+            }
+        }
+    }
+
+
+
+
+
+
 
 
 
@@ -274,7 +272,7 @@ namespace TeamAWordle {
     {
         String^ msg = won
             ? "Congratulations! You guessed the word.\nPlay again?"
-            : "Game over � the word was: " + targetWord + "\nPlay again?";
+            : "Game over — the word was: " + targetWord + "\nPlay again?";
 
         auto result = MessageBox::Show(
             msg,

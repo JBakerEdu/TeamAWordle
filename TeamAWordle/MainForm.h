@@ -1,10 +1,7 @@
 #pragma once
 #include <memory>
 #include <msclr/marshal_cppstd.h>
-
 #include "GameModeController.h"
-#include "WordList.h"
-#include "GuessValidator.h"
 #include "SettingsForm.h"
 
 class GameSession;
@@ -46,9 +43,11 @@ namespace TeamAWordle
         int currentRow;
         int currentCol;
         bool allowDoubleLetters_;
-        System::Drawing::Color correctColor_;
-        System::Drawing::Color presentColor_;
-        System::Drawing::Color wrongColor_;
+        Color correctColor_;
+        Color presentColor_;
+        Color wrongColor_;
+        Generic::List<Label^>^ memorySummaryLabels;
+
 
 
 #pragma region Windows Form Designer generated code
@@ -57,8 +56,8 @@ namespace TeamAWordle
         {
             this->components = gcnew System::ComponentModel::Container();
 
-            this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-            this->ClientSize = System::Drawing::Size(400, 650);
+            this->AutoScaleMode = Windows::Forms::AutoScaleMode::Font;
+            this->ClientSize = Drawing::Size(400, 760);
             this->Text = L"Wordle Game Baker and Klamfoth";
 
             Panel^ navBar = gcnew Panel();
@@ -93,31 +92,54 @@ namespace TeamAWordle
             this->KeyDown += gcnew KeyEventHandler(this, &MainForm::MainForm_KeyDown);
             this->guessGridPanel = gcnew TableLayoutPanel();
             this->guessGridPanel->ColumnCount = 5;
-            this->guessGridPanel->RowCount = 6;
-            this->guessGridPanel->Location = System::Drawing::Point(20, 70);
-            this->guessGridPanel->Size = System::Drawing::Size(360, 360);
-            for (int i = 0; i < 5; i++) this->guessGridPanel->ColumnStyles->Add(gcnew ColumnStyle(SizeType::Percent, 20));
-            for (int i = 0; i < 6; i++) this->guessGridPanel->RowStyles->Add(gcnew RowStyle(SizeType::Percent, 16.66F));
+            this->guessGridPanel->RowCount = 12;
+            this->guessGridPanel->Location = Point(20, 70);
+            this->guessGridPanel->Size = Drawing::Size(360, 480); // slightly increased for spacing
+
+            // Set columns to 20% each
+            for (int i = 0; i < 5; i++)
+                this->guessGridPanel->ColumnStyles->Add(gcnew ColumnStyle(SizeType::Percent, 20));
+
+            // Alternate row heights: 60px for guess rows, 10px for summary/spacing
+            for (int i = 0; i < 12; i++) {
+                float height = (i % 2 == 0) ? 60.0f : 20.0f;
+                this->guessGridPanel->RowStyles->Add(gcnew RowStyle(SizeType::Absolute, height));
+            }
+
             this->gridLabels = gcnew array<Label^>(30);
-            for (int r = 0; r < 6; r++)
-            {
-                for (int c = 0; c < 5; c++)
-                {
+            this->memorySummaryLabels = gcnew System::Collections::Generic::List<Label^>();
+
+            for (int r = 0; r < 6; r++) {
+                // Add 5 guess cells in even-numbered rows
+                for (int c = 0; c < 5; c++) {
                     int idx = r * 5 + c;
                     Label^ lbl = gcnew Label();
                     lbl->BorderStyle = BorderStyle::FixedSingle;
                     lbl->Dock = DockStyle::Fill;
-                    lbl->Font = gcnew System::Drawing::Font(L"Microsoft Sans Serif", 20);
+                    lbl->Font = gcnew Drawing::Font(L"Microsoft Sans Serif", 20);
                     lbl->TextAlign = ContentAlignment::MiddleCenter;
-                    this->guessGridPanel->Controls->Add(lbl, c, r);
+                    this->guessGridPanel->Controls->Add(lbl, c, r * 2);
                     this->gridLabels[idx] = lbl;
                 }
+
+                // Add summary label in odd-numbered row below each guess row
+                Label^ summaryLbl = gcnew Label();
+                summaryLbl->Text = "Feed Back Label";
+                summaryLbl->Visible = true;
+                summaryLbl->AutoSize = true;
+                summaryLbl->ForeColor = Color::Black;
+                summaryLbl->Font = gcnew System::Drawing::Font("Microsoft Sans Serif", 8);
+                this->guessGridPanel->Controls->Add(summaryLbl, 0, r * 2 + 1);
+                this->guessGridPanel->SetColumnSpan(summaryLbl, 5);
+
+                this->memorySummaryLabels->Add(summaryLbl);
             }
+
             this->Controls->Add(this->guessGridPanel);
 
             this->keyboardPanel = gcnew Panel();
-            this->keyboardPanel->Location = System::Drawing::Point(20, 450);
-            this->keyboardPanel->Size = System::Drawing::Size(360, 180);
+            this->keyboardPanel->Location = Point(20, 565);
+            this->keyboardPanel->Size = Drawing::Size(360, 180);
 
             array<String^>^ rows = gcnew array<String^>{ L"QWERTYUIOP", L"ASDFGHJKL", L"ZXCVBNM" };
             this->letterButtons = gcnew array<Button^>(26);
@@ -132,9 +154,9 @@ namespace TeamAWordle
                 {
                     Button^ btn = gcnew Button();
                     btn->Text = ch.ToString();
-                    btn->Size = System::Drawing::Size(30, 40);
-                    btn->Location = System::Drawing::Point(xOffset, yOffset);
-                    btn->Click += gcnew System::EventHandler(this, &MainForm::OnLetterButton_Click);
+                    btn->Size = Drawing::Size(30, 40);
+                    btn->Location = Point(xOffset, yOffset);
+                    btn->Click += gcnew EventHandler(this, &MainForm::OnLetterButton_Click);
                     this->keyboardPanel->Controls->Add(btn);
                     this->letterButtons[btnIndex++] = btn;
                     btn->TabStop = false;
@@ -145,16 +167,16 @@ namespace TeamAWordle
 
             this->enterButton = gcnew Button();
             this->enterButton->Text = L"Enter";
-            this->enterButton->Size = System::Drawing::Size(60, 40);
-            this->enterButton->Location = System::Drawing::Point(0, yOffset);
-            this->enterButton->Click += gcnew System::EventHandler(this, &MainForm::OnEnterButton_Click);
+            this->enterButton->Size = Drawing::Size(60, 40);
+            this->enterButton->Location = Point(0, yOffset);
+            this->enterButton->Click += gcnew EventHandler(this, &MainForm::OnEnterButton_Click);
             this->keyboardPanel->Controls->Add(this->enterButton);
 
             this->backspaceButton = gcnew Button();
             this->backspaceButton->Text = L"<";
-            this->backspaceButton->Size = System::Drawing::Size(60, 40);
-            this->backspaceButton->Location = System::Drawing::Point(300, yOffset);
-            this->backspaceButton->Click += gcnew System::EventHandler(this, &MainForm::OnBackspaceButton_Click);
+            this->backspaceButton->Size = Drawing::Size(60, 40);
+            this->backspaceButton->Location = Point(300, yOffset);
+            this->backspaceButton->Click += gcnew EventHandler(this, &MainForm::OnBackspaceButton_Click);
             this->keyboardPanel->Controls->Add(this->backspaceButton);
 
             this->Controls->Add(this->keyboardPanel);
@@ -164,6 +186,7 @@ namespace TeamAWordle
 
         Button^ FindButtonForLetter(Char letter);
         void UpdateKeyboardColor(Char letter, Color newColor);
+        void ApplyMemoryModeFeedback(const FeedbackResult& feedback, bool isCorrect);
         void ResetKeyboardColors();
         void OnLetterButton_Click(Object^ sender, EventArgs^ e);
         void OnBackspaceButton_Click(Object^ sender, EventArgs^ e);
@@ -205,27 +228,18 @@ namespace TeamAWordle
         void MainForm::OnSettings_Click(Object^ sender, EventArgs^ e) {
             SettingsForm^ settingsForm = gcnew SettingsForm(allowDoubleLetters_);
 
-            if (settingsForm->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+            if (settingsForm->ShowDialog() == Windows::Forms::DialogResult::OK) {
                 allowDoubleLetters_ = settingsForm->GetAllowDoubleLetters();
-
-                // THIS IS REQUIRED
                 correctColor_ = settingsForm->GetCorrectColor();
                 presentColor_ = settingsForm->GetPresentColor();
                 wrongColor_ = settingsForm->GetWrongColor();
 
-                SettingsForm::SaveSettingsToFile(
-                    allowDoubleLetters_,
-                    correctColor_,
-                    presentColor_,
-                    wrongColor_
-                );
-
+                SettingsForm::SaveSettingsToFile(allowDoubleLetters_, correctColor_, presentColor_, wrongColor_);
                 MessageBox::Show("Settings saved.");
             }
 
             delete settingsForm;
         }
-
 
         void OnStartNewGame_Click(Object^ sender, EventArgs^ e) {
             StartNewGame();
