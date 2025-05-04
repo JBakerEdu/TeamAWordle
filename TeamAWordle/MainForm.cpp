@@ -40,7 +40,6 @@ namespace TeamAWordle {
         InitializeComponent();
         allowDoubleLetters_ = SettingsForm::LoadSettingsFromFile();
         SettingsForm::LoadColorsFromFile(correctColor_, presentColor_, wrongColor_);
-        stats_ = new PlayerStats();
 
         try {
             session_ = new GameSession("dictionary.txt");
@@ -66,7 +65,6 @@ namespace TeamAWordle {
             components = nullptr;
         }
 
-        delete stats_;
         if (user_ != nullptr) {
             user_->saveToFile("Profiles");
             delete user_;
