@@ -120,6 +120,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameModeController.cpp" />
     <ClCompile Include="GameSession.cpp" />
     <ClCompile Include="GuessValidator.cpp" />
     <ClCompile Include="MainForm.cpp" />
@@ -127,6 +128,7 @@
     <ClCompile Include="WordList.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameModeController.h" />
     <ClInclude Include="GameSession.h" />
     <ClInclude Include="GuessValidator.h" />
     <ClInclude Include="MainForm.h">

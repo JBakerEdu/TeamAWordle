@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 #include <msclr/marshal_cppstd.h>
+
+#include "GameModeController.h"
 #include "WordList.h"
 #include "GuessValidator.h"
 #include "SettingsForm.h"
@@ -29,6 +31,7 @@ namespace TeamAWordle
 
     private:
         GameSession* session_;
+        GameModeController* modeController_;
 
         System::ComponentModel::Container^ components;
 

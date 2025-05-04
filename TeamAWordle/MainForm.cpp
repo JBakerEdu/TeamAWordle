@@ -1,5 +1,4 @@
 #include "MainForm.h"
-#include "WordList.h"
 #include "GuessValidator.h"
 #include <msclr/marshal_cppstd.h>
 #include "GameSession.h"
@@ -25,6 +24,7 @@ namespace TeamAWordle {
         InitializeComponent();
         allowDoubleLetters_ = SettingsForm::LoadSettingsFromFile();
         SettingsForm::LoadColorsFromFile(correctColor_, presentColor_, wrongColor_);
+        modeController_ = new GameModeController(GameMode::Hard);
 
 
         try {
@@ -35,7 +35,6 @@ namespace TeamAWordle {
             Close();
             return;
         }
-
         StartNewGame();
     }
 
@@ -44,6 +43,11 @@ namespace TeamAWordle {
         if (session_ != nullptr) {
             delete session_;
             session_ = nullptr;
+        }
+
+        if (modeController_ != nullptr) {
+            delete modeController_;
+            modeController_ = nullptr;
         }
 
         if (components != nullptr) {
@@ -147,6 +151,7 @@ namespace TeamAWordle {
         ActiveControl = nullptr;
     }
 
+    /**
     bool MainForm::CheckGuess()
     {
         bool allGreen = true;
@@ -181,6 +186,55 @@ namespace TeamAWordle {
         }
         return false;
     }
+    */
+
+    bool MainForm::CheckGuess() {
+        if (currentGuess->Length != 5)
+            return false;
+
+        System::String^ guessStr = currentGuess;
+        System::String^ targetStr = targetWord;
+
+        std::string guess = msclr::interop::marshal_as<std::string>(guessStr->ToLowerInvariant());
+        std::string target = msclr::interop::marshal_as<std::string>(targetStr->ToLowerInvariant());
+
+        FeedbackResult feedback = modeController_->EvaluateGuess(guess, target);
+
+        if (modeController_->GetMode() == GameMode::Memory) {
+            MessageBox::Show(gcnew String(feedback.memorySummary.c_str()), "Feedback", MessageBoxButtons::OK, MessageBoxIcon::Information);
+        }
+        else {
+            for (int i = 0; i < 5; ++i) {
+                Label^ cell = gridLabels[currentRow * 5 + i];
+                Color newColor;
+
+                switch (feedback.perLetterColors[i]) {
+                case 2: newColor = correctColor_; break;
+                case 1: newColor = presentColor_; break;
+                default: newColor = wrongColor_; break;
+                }
+
+                cell->BackColor = newColor;
+                UpdateKeyboardColor(currentGuess[i], newColor);
+            }
+        }
+
+        if (guess == target) {
+            GameOver(true);
+            return true;
+        }
+
+        if (currentRow == 5) {
+            GameOver(true);
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+
 
     Button^ MainForm::FindButtonForLetter(Char letter)
     {
