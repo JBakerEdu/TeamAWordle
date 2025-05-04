@@ -34,10 +34,29 @@ void TeamAWordle::SettingsForm::LoadColorsFromFile(System::Drawing::Color% corre
     }
 }
 
-void TeamAWordle::SettingsForm::SaveSettingsToFile(bool allowDoubleLetters, System::Drawing::Color correct, System::Drawing::Color present, System::Drawing::Color wrong) {
-    std::ofstream file("settings.txt", std::ios::trunc);
-    file << "allowDoubleLetters=" << (allowDoubleLetters ? "true" : "false") << std::endl;
-    file << "correctColor=" << correct.ToArgb() << std::endl;
-    file << "presentColor=" << present.ToArgb() << std::endl;
-    file << "wrongColor=" << wrong.ToArgb() << std::endl;
+GameMode TeamAWordle::SettingsForm::LoadGameModeFromFile() {
+    std::ifstream file("settings.txt");
+    std::string line;
+    while (std::getline(file, line)) {
+        if (line.find("gameMode=") == 0) {
+            int value = std::stoi(line.substr(9));
+            if (value >= 0 && value <= 3) {
+                return static_cast<GameMode>(value);
+            }
+        }
+    }
+    return GameMode::Original; // Default fallback
 }
+
+
+void TeamAWordle::SettingsForm::SaveSettingsToFile(bool allowDoubleLetters, System::Drawing::Color correct, System::Drawing::Color present, System::Drawing::Color wrong, GameMode mode) {
+    System::IO::StreamWriter^ writer = gcnew System::IO::StreamWriter("settings.txt");
+    writer->WriteLine("allowDoubleLetters=" + allowDoubleLetters.ToString());
+    writer->WriteLine("correctColor=" + correct.ToArgb());
+    writer->WriteLine("presentColor=" + present.ToArgb());
+    writer->WriteLine("wrongColor=" + wrong.ToArgb());
+    writer->WriteLine("gameMode=" + static_cast<int>(mode));
+    writer->Close();
+}
+
+

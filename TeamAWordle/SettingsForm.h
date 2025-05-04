@@ -1,4 +1,5 @@
 #pragma once
+#include "GameModeController.h"
 
 namespace TeamAWordle {
 
@@ -9,8 +10,6 @@ namespace TeamAWordle {
         SettingsForm(bool allowDoubleLetters) {
             LoadColorsFromFile(correctColor, presentColor, wrongColor);
 
-
-            // UI Layout
             chkAllowDoubleLetters = gcnew System::Windows::Forms::CheckBox();
             chkAllowDoubleLetters->AutoSize = true;
             chkAllowDoubleLetters->Location = System::Drawing::Point(20, 20);
@@ -33,7 +32,6 @@ namespace TeamAWordle {
             cmbGameMode->SelectedIndex = 0;
 
             this->Controls->Add(cmbGameMode);
-
 
             System::Windows::Forms::Label^ lblColorPalette = gcnew System::Windows::Forms::Label();
             lblColorPalette->Text = L"Select Color Palette:";
@@ -90,7 +88,6 @@ namespace TeamAWordle {
             btnPresentColor->BackColor = presentColor;
             btnWrongColor->BackColor = wrongColor;
 
-
             this->ClientSize = System::Drawing::Size(240, 335);
             this->Text = L"Settings";
             this->AcceptButton = okButton;
@@ -103,7 +100,7 @@ namespace TeamAWordle {
         System::Drawing::Color GetWrongColor() { return wrongColor; }
 
         static bool LoadSettingsFromFile();
-        static void SaveSettingsToFile(bool allowDoubleLetters, System::Drawing::Color correct, System::Drawing::Color present, System::Drawing::Color wrong);
+        static void SaveSettingsToFile(bool allowDoubleLetters, System::Drawing::Color correct, System::Drawing::Color present, System::Drawing::Color wrong, GameMode mode);
 
     protected:
         ~SettingsForm() {}
@@ -116,6 +113,7 @@ namespace TeamAWordle {
         System::Windows::Forms::Button^ btnPresentColor;
         System::Windows::Forms::Button^ btnWrongColor;
         System::Windows::Forms::ComboBox^ cmbGameMode;
+        GameMode TeamAWordle::SettingsForm::LoadGameModeFromFile();
 
         System::Drawing::Color correctColor;
         System::Drawing::Color presentColor;
