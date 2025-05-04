@@ -99,6 +99,19 @@ namespace TeamAWordle {
             lbl->Visible = false;
         }
 
+        if (selectedMode_ == GameMode::Lightning) {
+            lightningSecondsRemaining_ = 60;
+            lightningTimerLabel_->Text = "Time: 60s";
+            lightningTimerLabel_->ForeColor = System::Drawing::Color::Black;
+            lightningTimerLabel_->Visible = true;
+            lightningTimer_->Start();
+        }
+        else {
+            lightningTimer_->Stop();
+            lightningTimerLabel_->Visible = false;
+        }
+
+
 
 
 
@@ -107,6 +120,45 @@ namespace TeamAWordle {
         ///This will need to be in consol not here.... should use ifDef
         MessageBox::Show("DEBUG Target: " + targetWord);
     }
+
+
+
+
+
+
+
+    void MainForm::OnLightningTimerTick(Object^ sender, EventArgs^ e) {
+        lightningSecondsRemaining_--;
+
+        if (lightningSecondsRemaining_ <= 0) {
+            lightningTimer_->Stop();
+
+            MessageBox::Show("Time's up!\nThe word was: " + targetWord, "Lightning Mode", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+            GameOver(false);
+            return;
+        }
+
+        if (lightningSecondsRemaining_ <= 10) {
+            lightningTimerLabel_->ForeColor = Color::Red;
+        }
+
+        lightningTimerLabel_->Text = "Time: " + lightningSecondsRemaining_.ToString() + "s";
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     void MainForm::OnLetterButton_Click(Object^ sender, EventArgs^ e)
@@ -201,13 +253,11 @@ namespace TeamAWordle {
             }
         }
 
-        if (guess == target) {
-            GameOver(true);
-            return true;
-        }
-
-        if (currentRow == 5) {
-            GameOver(false);
+        if (guess == target || currentRow == 5) {
+            if (selectedMode_ == GameMode::Lightning) {
+                lightningTimer_->Stop();
+            }
+            GameOver(guess == target);
             return true;
         }
 

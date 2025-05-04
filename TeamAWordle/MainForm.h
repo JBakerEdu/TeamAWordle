@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <memory>
 #include <msclr/marshal_cppstd.h>
 #include "GameModeController.h"
@@ -50,6 +50,26 @@ namespace TeamAWordle
         GameMode selectedMode_;
 
 
+
+
+
+
+
+        Timer^ lightningTimer_;
+        int lightningSecondsRemaining_;
+        Label^ lightningTimerLabel_;
+
+
+
+
+
+
+
+
+
+
+
+
 #pragma region Windows Form Designer generated code
 
         void InitializeComponent(void)
@@ -87,6 +107,43 @@ namespace TeamAWordle
             navBar->Controls->Add(btnEndGame);
             navBar->Controls->Add(btnSettings);
             this->Controls->Add(navBar);
+
+
+
+
+
+
+            lightningTimerLabel_ = gcnew Label();
+            lightningTimerLabel_->Text = "60s";
+            lightningTimerLabel_->Font = gcnew Drawing::Font("Microsoft Sans Serif", 12, FontStyle::Bold);
+            lightningTimerLabel_->ForeColor = Color::DarkRed;
+            lightningTimerLabel_->AutoSize = true;
+            lightningTimerLabel_->Location = Point(20, 45);
+            lightningTimerLabel_->Visible = false;
+            this->Controls->Add(lightningTimerLabel_);
+
+            lightningTimer_ = gcnew Timer();
+            lightningTimer_->Interval = 1000; // 1 second
+            lightningTimer_->Tick += gcnew EventHandler(this, &MainForm::OnLightningTimerTick);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             this->KeyPreview = true;
             this->KeyDown += gcnew KeyEventHandler(this, &MainForm::MainForm_KeyDown);
@@ -188,6 +245,26 @@ namespace TeamAWordle
         void OnLetterButton_Click(Object^ sender, EventArgs^ e);
         void OnBackspaceButton_Click(Object^ sender, EventArgs^ e);
         void OnEnterButton_Click(Object^ sender, EventArgs^ e);
+
+
+
+
+
+
+        void MainForm::OnLightningTimerTick(Object^ sender, EventArgs^ e);
+
+
+
+
+
+
+
+
+
+
+
+
+
         bool CheckGuess();
         void StartNewGame();
         void GameOver(bool won);
