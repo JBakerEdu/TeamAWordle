@@ -40,8 +40,6 @@ namespace TeamAWordle {
                 "Original", "Hard", "Lightning", "Memory"
             });
             cmbGameMode->SelectedIndex = static_cast<int>(currentMode);
-
-
             this->Controls->Add(cmbGameMode);
 
             System::Windows::Forms::Label^ lblColorPalette = gcnew System::Windows::Forms::Label();
@@ -124,8 +122,6 @@ namespace TeamAWordle {
         System::Windows::Forms::Button^ btnPresentColor;
         System::Windows::Forms::Button^ btnWrongColor;
         System::Windows::Forms::ComboBox^ cmbGameMode;
-        
-
         System::Drawing::Color correctColor;
         System::Drawing::Color presentColor;
         System::Drawing::Color wrongColor;

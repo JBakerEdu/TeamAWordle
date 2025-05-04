@@ -115,51 +115,16 @@ namespace TeamAWordle {
 
 
 
-
-
         ///This will need to be in consol not here.... should use ifDef
         MessageBox::Show("DEBUG Target: " + targetWord);
+
+
+
+
+
+
+
     }
-
-
-
-
-
-
-
-    void MainForm::OnLightningTimerTick(Object^ sender, EventArgs^ e) {
-        lightningSecondsRemaining_--;
-
-        if (lightningSecondsRemaining_ <= 0) {
-            lightningTimer_->Stop();
-
-            MessageBox::Show("Time's up!\nThe word was: " + targetWord, "Lightning Mode", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
-            GameOver(false);
-            return;
-        }
-
-        if (lightningSecondsRemaining_ <= 10) {
-            lightningTimerLabel_->ForeColor = Color::Red;
-        }
-
-        lightningTimerLabel_->Text = "Time: " + lightningSecondsRemaining_.ToString() + "s";
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     void MainForm::OnLetterButton_Click(Object^ sender, EventArgs^ e)
     {
@@ -281,15 +246,23 @@ namespace TeamAWordle {
         }
     }
 
+    void MainForm::OnLightningTimerTick(Object^ sender, EventArgs^ e) {
+        lightningSecondsRemaining_--;
 
+        if (lightningSecondsRemaining_ <= 0) {
+            lightningTimer_->Stop();
 
+            lightningTimerLabel_->Text = "Time is up!";
+            GameOver(false);
+            return;
+        }
 
+        if (lightningSecondsRemaining_ <= 10) {
+            lightningTimerLabel_->ForeColor = Color::Red;
+        }
 
-
-
-
-
-
+        lightningTimerLabel_->Text = "Time: " + lightningSecondsRemaining_.ToString() + "s";
+    }
 
     Button^ MainForm::FindButtonForLetter(Char letter)
     {

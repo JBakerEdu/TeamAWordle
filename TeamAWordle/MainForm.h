@@ -48,27 +48,9 @@ namespace TeamAWordle
         Color wrongColor_;
         Generic::List<Label^>^ memorySummaryLabels;
         GameMode selectedMode_;
-
-
-
-
-
-
-
         Timer^ lightningTimer_;
         int lightningSecondsRemaining_;
         Label^ lightningTimerLabel_;
-
-
-
-
-
-
-
-
-
-
-
 
 #pragma region Windows Form Designer generated code
 
@@ -77,7 +59,7 @@ namespace TeamAWordle
             this->components = gcnew System::ComponentModel::Container();
 
             this->AutoScaleMode = Windows::Forms::AutoScaleMode::Font;
-            this->ClientSize = Drawing::Size(400, 760);
+            this->ClientSize = Drawing::Size(400, 780);
             this->Text = L"Wordle Game Baker and Klamfoth";
 
             Panel^ navBar = gcnew Panel();
@@ -108,49 +90,25 @@ namespace TeamAWordle
             navBar->Controls->Add(btnSettings);
             this->Controls->Add(navBar);
 
-
-
-
-
-
             lightningTimerLabel_ = gcnew Label();
             lightningTimerLabel_->Text = "60s";
             lightningTimerLabel_->Font = gcnew Drawing::Font("Microsoft Sans Serif", 12, FontStyle::Bold);
-            lightningTimerLabel_->ForeColor = Color::DarkRed;
+            lightningTimerLabel_->ForeColor = Color::Black;
             lightningTimerLabel_->AutoSize = true;
-            lightningTimerLabel_->Location = Point(20, 45);
+            lightningTimerLabel_->Location = Point(23, 60);
             lightningTimerLabel_->Visible = false;
             this->Controls->Add(lightningTimerLabel_);
 
             lightningTimer_ = gcnew Timer();
-            lightningTimer_->Interval = 1000; // 1 second
+            lightningTimer_->Interval = 1000;
             lightningTimer_->Tick += gcnew EventHandler(this, &MainForm::OnLightningTimerTick);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             this->KeyPreview = true;
             this->KeyDown += gcnew KeyEventHandler(this, &MainForm::MainForm_KeyDown);
             this->guessGridPanel = gcnew TableLayoutPanel();
             this->guessGridPanel->ColumnCount = 5;
             this->guessGridPanel->RowCount = 12;
-            this->guessGridPanel->Location = Point(20, 70);
+            this->guessGridPanel->Location = Point(20, 90);
             this->guessGridPanel->Size = Drawing::Size(360, 480);
 
             for (int i = 0; i < 5; i++)
@@ -192,7 +150,7 @@ namespace TeamAWordle
             this->Controls->Add(this->guessGridPanel);
 
             this->keyboardPanel = gcnew Panel();
-            this->keyboardPanel->Location = Point(20, 565);
+            this->keyboardPanel->Location = Point(20, 585);
             this->keyboardPanel->Size = Drawing::Size(360, 180);
 
             array<String^>^ rows = gcnew array<String^>{ L"QWERTYUIOP", L"ASDFGHJKL", L"ZXCVBNM" };
@@ -245,26 +203,7 @@ namespace TeamAWordle
         void OnLetterButton_Click(Object^ sender, EventArgs^ e);
         void OnBackspaceButton_Click(Object^ sender, EventArgs^ e);
         void OnEnterButton_Click(Object^ sender, EventArgs^ e);
-
-
-
-
-
-
         void MainForm::OnLightningTimerTick(Object^ sender, EventArgs^ e);
-
-
-
-
-
-
-
-
-
-
-
-
-
         bool CheckGuess();
         void StartNewGame();
         void GameOver(bool won);
@@ -320,7 +259,6 @@ namespace TeamAWordle
                 MessageBox::Show("Settings saved. A new game will now begin with the new settings applied.");
                 StartNewGame();
             }
-
             delete settingsForm;
         }
 
