@@ -1,4 +1,5 @@
-﻿#include "MainForm.h"
+﻿//#define DEBUG_MODE
+#include "MainForm.h"
 #include "GuessValidator.h"
 #include <msclr/marshal_cppstd.h>
 #include "GameSession.h"
@@ -6,6 +7,8 @@
 #include "UserProfile.h"
 #include "UsernameForm.h"
 #include "StatsForm.h"
+#include <iostream>
+#include <Windows.h>
 
 using namespace System;
 using namespace System::Windows::Forms;
@@ -25,6 +28,10 @@ namespace TeamAWordle {
     
     MainForm::MainForm(void)
     {
+#ifdef DEBUG_MODE
+        AllocConsole();
+        freopen("CONOUT$", "w", stdout);
+#endif
         UsernameForm^ prompt = gcnew UsernameForm();
         if (prompt->ShowDialog() != System::Windows::Forms::DialogResult::OK)
         {
@@ -75,6 +82,8 @@ namespace TeamAWordle {
             user_->saveToFile("Profiles");
             delete user_;
         }
+
+        FreeConsole();
     }
 
     void MainForm::StartNewGame()
@@ -131,20 +140,9 @@ namespace TeamAWordle {
             lightningTimer_->Stop();
             lightningTimerLabel_->Visible = false;
         }
-
-
-
-
-
-        ///This will need to be in consol not here.... should use ifDef
-        MessageBox::Show("DEBUG Target: " + targetWord);
-
-
-
-
-
-
-
+#ifdef DEBUG_MODE
+        std::cout << "[DEBUG] Target word: " << session_->getTargetWord() << std::endl;
+#endif
     }
 
     void MainForm::OnLetterButton_Click(Object^ sender, EventArgs^ e)
