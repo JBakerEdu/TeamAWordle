@@ -1,4 +1,4 @@
-﻿//#define DEBUG_MODE
+﻿#define DEBUG_MODE
 #include "MainForm.h"
 #include "GuessValidator.h"
 #include <msclr/marshal_cppstd.h>
@@ -28,10 +28,10 @@ namespace TeamAWordle {
     
     MainForm::MainForm(void)
     {
-#ifdef DEBUG_MODE
-        AllocConsole();
-        freopen("CONOUT$", "w", stdout);
-#endif
+		#ifdef DEBUG_MODE
+			AllocConsole();
+			freopen("CONOUT$", "w", stdout);
+		#endif
         UsernameForm^ prompt = gcnew UsernameForm();
         if (prompt->ShowDialog() != System::Windows::Forms::DialogResult::OK)
         {
@@ -63,6 +63,11 @@ namespace TeamAWordle {
 
     MainForm::~MainForm()
     {
+        if (lightningTimer_ != nullptr) {
+            lightningTimer_->Stop();
+            lightningTimer_ = nullptr;
+        }
+
         if (session_ != nullptr) {
             delete session_;
             session_ = nullptr;
@@ -73,17 +78,20 @@ namespace TeamAWordle {
             modeController_ = nullptr;
         }
 
+        if (user_ != nullptr) {
+            user_->saveToFile("Profiles");
+            delete user_;
+            user_ = nullptr;
+        }
+
         if (components != nullptr) {
             delete components;
             components = nullptr;
         }
 
-        if (user_ != nullptr) {
-            user_->saveToFile("Profiles");
-            delete user_;
-        }
-
-        FreeConsole();
+		#ifdef DEBUG_MODE
+			FreeConsole();
+		#endif
     }
 
     void MainForm::StartNewGame()
@@ -140,9 +148,9 @@ namespace TeamAWordle {
             lightningTimer_->Stop();
             lightningTimerLabel_->Visible = false;
         }
-#ifdef DEBUG_MODE
-        std::cout << "[DEBUG] Target word: " << session_->getTargetWord() << std::endl;
-#endif
+		#ifdef DEBUG_MODE
+			std::cout << "[DEBUG] Target word: " << session_->getTargetWord() << std::endl;
+		#endif
     }
 
     void MainForm::OnLetterButton_Click(Object^ sender, EventArgs^ e)
@@ -320,26 +328,22 @@ namespace TeamAWordle {
     void MainForm::GameOver(bool won)
     {
         int guessesUsed = currentRow + 1;
-
         user_->getStats().recordGame(won, guessesUsed);
 
-        StatsForm^ statsWindow = gcnew StatsForm(user_->getStats());
-        statsWindow->ShowDialog(this); 
+        String^ resultText = won
+            ? "You won in " + guessesUsed + " guess" + (guessesUsed == 1 ? "!" : "es!")
+            : "You lost. The word was: " + targetWord;
 
-        String^ msg = won
-            ? "Congratulations! You guessed the word.\nPlay again?"
-            : "Game over — the word was: " + targetWord + "\nPlay again?";
+        StatsForm^ statsWindow = gcnew StatsForm(user_->getStats(), resultText);
+        statsWindow->ShowDialog(this);
 
-        auto result = MessageBox::Show(
-            msg,
-            "Wordle",
-            MessageBoxButtons::YesNo,
-            MessageBoxIcon::Question);
-
-        if (result == System::Windows::Forms::DialogResult::Yes)
+        if (statsWindow->PlayAgain) {
             StartNewGame();
+        }
         else
-            this->Close();
+        {
+        	this->Close();
+        }
     }
 }
 
