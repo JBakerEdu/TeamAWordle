@@ -2,6 +2,10 @@
 #include "GuessValidator.h"
 #include <msclr/marshal_cppstd.h>
 #include "GameSession.h"
+#include "PlayerStats.h"
+#include "UserProfile.h"
+#include "UsernameForm.h"
+#include "StatsForm.h"
 
 using namespace System;
 using namespace System::Windows::Forms;
@@ -21,6 +25,18 @@ namespace TeamAWordle {
     
     MainForm::MainForm(void)
     {
+        UsernameForm^ prompt = gcnew UsernameForm();
+        if (prompt->ShowDialog() != System::Windows::Forms::DialogResult::OK)
+        {
+            this->Close();
+            return;
+        }
+
+        System::String^ username = prompt->EnteredUsername;
+        std::string nativeUsername = msclr::interop::marshal_as<std::string>(username);
+        user_ = new UserProfile(nativeUsername);
+        user_->loadFromFile("Profiles");
+
         InitializeComponent();
         allowDoubleLetters_ = SettingsForm::LoadSettingsFromFile();
         SettingsForm::LoadColorsFromFile(correctColor_, presentColor_, wrongColor_);
@@ -53,6 +69,11 @@ namespace TeamAWordle {
         if (components != nullptr) {
             delete components;
             components = nullptr;
+        }
+
+        if (user_ != nullptr) {
+            user_->saveToFile("Profiles");
+            delete user_;
         }
     }
 
@@ -300,6 +321,13 @@ namespace TeamAWordle {
 
     void MainForm::GameOver(bool won)
     {
+        int guessesUsed = currentRow + 1;
+
+        user_->getStats().recordGame(won, guessesUsed);
+
+        StatsForm^ statsWindow = gcnew StatsForm(user_->getStats());
+        statsWindow->ShowDialog(this); 
+
         String^ msg = won
             ? "Congratulations! You guessed the word.\nPlay again?"
             : "Game over — the word was: " + targetWord + "\nPlay again?";

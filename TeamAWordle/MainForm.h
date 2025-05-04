@@ -5,6 +5,8 @@
 #include "SettingsForm.h"
 
 class GameSession;
+class PlayerStats;
+class UserProfile;
 
 namespace TeamAWordle
 {
@@ -29,6 +31,7 @@ namespace TeamAWordle
     private:
         GameSession* session_;
         GameModeController* modeController_;
+        UserProfile* user_;
 
         System::ComponentModel::Container^ components;
 
