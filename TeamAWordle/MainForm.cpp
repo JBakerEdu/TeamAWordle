@@ -6,6 +6,7 @@
 #include "PlayerStats.h"
 #include "UserProfile.h"
 #include "UsernameForm.h"
+#include "StatsForm.h"
 
 using namespace System;
 using namespace System::Windows::Forms;
@@ -240,6 +241,9 @@ namespace TeamAWordle {
         int guessesUsed = currentRow + 1;
 
         user_->getStats().recordGame(won, guessesUsed);
+
+        StatsForm^ statsWindow = gcnew StatsForm(user_->getStats());
+        statsWindow->ShowDialog(this); 
 
         String^ msg = won
             ? "Congratulations! You guessed the word.\nPlay again?"
