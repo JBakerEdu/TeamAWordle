@@ -105,7 +105,9 @@ namespace TeamAWordle {
             modeController_ = nullptr;
         }
         modeController_ = new GameModeController(selectedMode_);
-
+        currentRow = 0;
+        currentCol = 0;
+        currentGuess = String::Empty;
         try {
             session_ = new GameSession("dictionary.txt", allowDoubleLetters_);
         }
@@ -115,23 +117,34 @@ namespace TeamAWordle {
             return;
         }
 
-        currentRow = 0;
-        currentCol = 0;
-        currentGuess = String::Empty;
+        ResetKeyboard();
+        ResetGameModesLabels();
+        ResetGuessedBoardLabels();
+        GetNewTargetWord();
 
+		#ifdef DEBUG_MODE
+			std::cout << "[DEBUG] Target word: " << session_->getTargetWord() << std::endl;
+		#endif
+    }
+
+    void MainForm::ResetGuessedBoardLabels()
+    {
         for (int i = 0; i < 30; i++) {
             gridLabels[i]->Text = String::Empty;
             gridLabels[i]->BackColor = SystemColors::Window;
         }
+    }
 
-        ResetKeyboardColors();
+    void MainForm::GetNewTargetWord()
+    {
         std::string tempTarget = session_->getTargetWord();
         String^ upperCase = gcnew String(tempTarget.c_str());
         targetWord = upperCase->ToUpper();
         this->Tag = targetWord;
-        enterButton->Enabled = false;
-        backspaceButton->Enabled = false;
+    }
 
+    void MainForm::ResetGameModesLabels()
+    {
         for each (Label ^ lbl in memorySummaryLabels) {
             lbl->Text = "";
             lbl->Visible = false;
@@ -139,7 +152,7 @@ namespace TeamAWordle {
 
         if (selectedMode_ == GameMode::Lightning) {
             lightningSecondsRemaining_ = 60;
-            lightningTimerLabel_->Text = "Time: 60s";
+            lightningTimerLabel_->Text = "Time: " + lightningSecondsRemaining_.ToString() + "s";
             lightningTimerLabel_->ForeColor = System::Drawing::Color::Black;
             lightningTimerLabel_->Visible = true;
             lightningTimer_->Start();
@@ -148,9 +161,6 @@ namespace TeamAWordle {
             lightningTimer_->Stop();
             lightningTimerLabel_->Visible = false;
         }
-		#ifdef DEBUG_MODE
-			std::cout << "[DEBUG] Target word: " << session_->getTargetWord() << std::endl;
-		#endif
     }
 
     void MainForm::OnLetterButton_Click(Object^ sender, EventArgs^ e)
@@ -316,13 +326,15 @@ namespace TeamAWordle {
         btn->BackColor = newColor;
     }
 
-    void MainForm::ResetKeyboardColors()
+    void MainForm::ResetKeyboard()
     {
         for each (Button ^ btn in letterButtons)
         {
             if (btn != nullptr)
                 btn->BackColor = SystemColors::Control;
         }
+        enterButton->Enabled = false;
+        backspaceButton->Enabled = false;
     }
 
     void MainForm::GameOver(bool won)

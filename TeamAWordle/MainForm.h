@@ -202,7 +202,10 @@ namespace TeamAWordle
         Button^ FindButtonForLetter(Char letter);
         void UpdateKeyboardColor(Char letter, Color newColor);
         void ApplyMemoryModeFeedback(const FeedbackResult& feedback, bool isCorrect);
-        void ResetKeyboardColors();
+        void ResetKeyboard();
+        void ResetGameModesLabels();
+        void MainForm::GetNewTargetWord();
+        void MainForm::ResetGuessedBoardLabels();
         void OnLetterButton_Click(Object^ sender, EventArgs^ e);
         void OnBackspaceButton_Click(Object^ sender, EventArgs^ e);
         void OnEnterButton_Click(Object^ sender, EventArgs^ e);
