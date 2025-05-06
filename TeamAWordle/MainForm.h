@@ -18,44 +18,100 @@ namespace TeamAWordle
     using namespace System::Drawing;
 
     /// <summary>
-    /// Summary for MainForm
+    /// MainForm is the primary interface for playing the Wordle game.
     /// </summary>
     public ref class MainForm : public Form
     {
     public:
+        /// <summary>
+        /// Initializes a new instance of the MainForm class with a given username.
+        /// </summary>
+        /// <param name="username">The username of the player.</param>
         MainForm(String^ username);
 
     protected:
+        /// <summary>
+        /// Cleans up resources used by the form.
+        /// </summary>
         ~MainForm();
 
     private:
+        /// <summary>Manages the current game session.</summary>
         GameSession* session_;
+
+        /// <summary>Handles logic for the selected game mode.</summary>
         GameModeController* modeController_;
+
+        /// <summary>Stores user profile data and preferences.</summary>
         UserProfile* user_;
+
+        /// <summary>Container for the components used by the form.</summary>
         System::ComponentModel::Container^ components;
+
+        /// <summary>The layout panel for the guess grid.</summary>
         TableLayoutPanel^ guessGridPanel;
+
+        /// <summary>Labels representing the guess grid cells.</summary>
         array<Label^>^ gridLabels;
+
+        /// <summary>The panel containing the virtual keyboard.</summary>
         Panel^ keyboardPanel;
+
+        /// <summary>Array of letter buttons on the keyboard.</summary>
         array<Button^>^ letterButtons;
+
+        /// <summary>Button used to submit a guess.</summary>
         Button^ enterButton;
+
+        /// <summary>Button used to delete the last character in the guess.</summary>
         Button^ backspaceButton;
+
+        /// <summary>The target word the player must guess.</summary>
         String^ targetWord;
+
+        /// <summary>The current guess input by the player.</summary>
         String^ currentGuess;
+
+        /// <summary>The current row index of the guess grid.</summary>
         int currentRow;
+
+        /// <summary>The current column index of the guess grid.</summary>
         int currentCol;
+
+        /// <summary>Indicates whether double letters are allowed in guesses.</summary>
         bool allowDoubleLetters_;
+
+        /// <summary>Color used for correctly guessed letters.</summary>
         Color correctColor_;
+
+        /// <summary>Color used for present but misplaced letters.</summary>
         Color presentColor_;
+
+        /// <summary>Color used for incorrect letters.</summary>
         Color wrongColor_;
+
+        /// <summary>List of feedback labels used in memory mode.</summary>
         Generic::List<Label^>^ memorySummaryLabels;
+
+        /// <summary>The currently selected game mode.</summary>
         GameMode selectedMode_;
+
+        /// <summary>Timer used for lightning mode countdowns.</summary>
         Timer^ lightningTimer_;
+
+        /// <summary>Remaining seconds for the current lightning mode round.</summary>
         int lightningSecondsRemaining_;
+
+        /// <summary>Label displaying the countdown timer in lightning mode.</summary>
         Label^ lightningTimerLabel_;
 
 #pragma region Windows Form Designer generated code
 
-        void InitializeComponent(void)
+
+        /// <summary>
+    	/// Initializes all UI components and lays out controls for the MainForm.
+    	/// </summary>
+    	void InitializeComponent(void)
         {
             this->components = gcnew System::ComponentModel::Container();
 
@@ -197,20 +253,70 @@ namespace TeamAWordle
         }
 #pragma endregion
 
+        /// <summary>
+        /// Finds the button corresponding to a specific letter.
+        /// </summary>
+        /// <param name="letter">The character to find a button for.</param>
+        /// <returns>The matching Button control.</returns>
         Button^ FindButtonForLetter(Char letter);
+
+        /// <summary>
+        /// Updates the keyboard button color for a given letter.
+        /// </summary>
+        /// <param name="letter">The letter to update.</param>
+        /// <param name="newColor">The new color to apply.</param>
         void UpdateKeyboardColor(Char letter, Color newColor);
+
+        /// <summary>
+        /// Applies feedback in Memory mode based on the guess.
+        /// </summary>
+        /// <param name="feedback">The feedback result structure.</param>
+        /// <param name="isCorrect">Whether the guess was correct.</param>
         void ApplyMemoryModeFeedback(const FeedbackResult& feedback, bool isCorrect);
+
+        /// <summary>Resets the keyboard color states to initial.</summary>
         void ResetKeyboard();
+
+        /// <summary>Clears feedback labels and resets their states.</summary>
         void ResetGameModesLabels();
-        void MainForm::GetNewTargetWord();
-        void MainForm::ResetGuessedBoardLabels();
+
+        /// <summary>Chooses and sets a new target word for the round.</summary>
+        void GetNewTargetWord();
+
+        /// <summary>Clears the guess board labels for a new round.</summary>
+        void ResetGuessedBoardLabels();
+
+        /// <summary>
+        /// Handles letter button clicks and appends letters to the guess.
+        /// </summary>
         void OnLetterButton_Click(Object^ sender, EventArgs^ e);
+
+        /// <summary>Handles the backspace button click event.</summary>
         void OnBackspaceButton_Click(Object^ sender, EventArgs^ e);
+
+        /// <summary>Handles the enter button click event to submit guesses.</summary>
         void OnEnterButton_Click(Object^ sender, EventArgs^ e);
-        void MainForm::OnLightningTimerTick(Object^ sender, EventArgs^ e);
+
+        /// <summary>
+        /// Handles lightning timer tick to update countdown and enforce limits.
+        /// </summary>
+        void OnLightningTimerTick(Object^ sender, EventArgs^ e);
+
+        /// <summary>Validates and checks the submitted guess.</summary>
+        /// <returns>True if the guess was valid; otherwise, false.</returns>
         bool CheckGuess();
+
+        /// <summary>Begins a new game round with reset state and target word.</summary>
         void StartNewGame();
+
+        /// <summary>
+        /// Ends the game and displays a win/loss message.
+        /// </summary>
+        /// <param name="won">True if the player won; otherwise, false.</param>
         void GameOver(bool won);
+
+
+        /// <summary>Handles keyboard input.</summary>
         void MainForm_KeyDown(Object^ sender, KeyEventArgs^ e)
         {
             String^ keyStr = e->KeyCode.ToString();
@@ -242,6 +348,7 @@ namespace TeamAWordle
             e->SuppressKeyPress = true;
         }
 
+        /// <summary>Handles settings button click and updates settings.</summary>
         void MainForm::OnSettings_Click(Object^ sender, EventArgs^ e) {
             SettingsForm^ settingsForm = gcnew SettingsForm(allowDoubleLetters_, selectedMode_);
 
@@ -266,11 +373,12 @@ namespace TeamAWordle
             delete settingsForm;
         }
 
-
+        /// <summary>Handles starting a new game.</summary>
         void OnStartNewGame_Click(Object^ sender, EventArgs^ e) {
             StartNewGame();
         }
 
+        /// <summary>Handles ending and closing the current game.</summary>
         void OnEndGame_Click(Object^ sender, EventArgs^ e) {
             this->Close();
         }

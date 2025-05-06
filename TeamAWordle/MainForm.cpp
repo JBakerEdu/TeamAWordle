@@ -18,7 +18,7 @@ int main(array<String^>^ args)
 {
     Application::EnableVisualStyles();
     Application::SetCompatibleTextRenderingDefault(false);
-    TeamAWordle::UsernameForm^ prompt = gcnew TeamAWordle::UsernameForm();
+    TeamAWordle::SignInForm^ prompt = gcnew TeamAWordle::SignInForm();
     if (prompt->ShowDialog() != DialogResult::OK)
     {
         return 0;
@@ -36,7 +36,8 @@ namespace TeamAWordle {
     {
 #ifdef DEBUG_MODE
         AllocConsole();
-        freopen("CONOUT$", "w", stdout);
+        FILE* fp;
+        freopen_s(&fp, "CONOUT$", "w", stdout);
 #endif
 
         std::string nativeUsername = msclr::interop::marshal_as<std::string>(username);

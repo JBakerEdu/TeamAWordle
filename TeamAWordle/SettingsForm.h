@@ -3,11 +3,30 @@
 
 namespace TeamAWordle {
 
+    /// <summary>
+    /// Provides a form for configuring user preferences for gameplay.
+    /// </summary>
     public ref class SettingsForm : public System::Windows::Forms::Form {
     public:
+
+        /// <summary>
+        /// Loads color settings from the settings file.
+        /// </summary>
+        /// <param name="correct">Reference to store the correct letter color.</param>
+        /// <param name="present">Reference to store the present letter color.</param>
+        /// <param name="wrong">Reference to store the wrong letter color.</param>
         static void LoadColorsFromFile(System::Drawing::Color% correct, System::Drawing::Color% present, System::Drawing::Color% wrong);
+
+        /// <summary>
+        /// Loads the selected game mode from the settings file.
+        /// </summary>
+        /// <returns>The GameMode enum loaded from file.</returns>
         static GameMode TeamAWordle::SettingsForm::LoadGameModeFromFile();
 
+        /// <summary>
+        /// Gets the selected game mode from the combo box.
+        /// </summary>
+        /// <returns>The currently selected GameMode enum value.</returns>
         GameMode GetSelectedGameMode() {
             switch (cmbGameMode->SelectedIndex) {
             case 1: return GameMode::Hard;
@@ -17,6 +36,11 @@ namespace TeamAWordle {
             }
         }
 
+        /// <summary>
+        /// Constructs a SettingsForm with given values for initialization.
+        /// </summary>
+        /// <param name="allowDoubleLetters">If true, double letters are allowed.</param>
+        /// <param name="currentMode">The current selected GameMode.</param>
         SettingsForm(bool allowDoubleLetters, GameMode currentMode) {
             LoadColorsFromFile(correctColor, presentColor, wrongColor);
 
@@ -103,15 +127,42 @@ namespace TeamAWordle {
             this->CancelButton = cancelButton;
         }
 
+        /// <summary>Returns whether double letters are allowed in guesses.</summary>
+        /// <returns>True if allowed; otherwise, false.</returns>
         bool GetAllowDoubleLetters() { return chkAllowDoubleLetters->Checked; }
+
+        /// <summary>Gets the currently selected color for correct guesses.</summary>
+        /// <returns>The selected correct letter color.</returns>
         System::Drawing::Color GetCorrectColor() { return correctColor; }
+
+        /// <summary>Gets the currently selected color for present letters.</summary>
+        /// <returns>The selected present letter color.</returns>
         System::Drawing::Color GetPresentColor() { return presentColor; }
+
+        /// <summary>Gets the currently selected color for incorrect letters.</summary>
+        /// <returns>The selected wrong letter color.</returns>
         System::Drawing::Color GetWrongColor() { return wrongColor; }
 
+        /// <summary>
+        /// Loads the boolean setting for allowing double letters from the settings file.
+        /// </summary>
+        /// <returns>True if allowed; otherwise, false.</returns>
         static bool LoadSettingsFromFile();
+
+        /// <summary>
+        /// Saves all current settings to the settings file.
+        /// </summary>
+        /// <param name="allowDoubleLetters">Allow double letters setting.</param>
+        /// <param name="correct">Correct color value.</param>
+        /// <param name="present">Present color value.</param>
+        /// <param name="wrong">Wrong color value.</param>
+        /// <param name="mode">Selected GameMode.</param>
         static void SaveSettingsToFile(bool allowDoubleLetters, System::Drawing::Color correct, System::Drawing::Color present, System::Drawing::Color wrong, GameMode mode);
 
     protected:
+        /// <summary>
+        /// Destructor for the SettingsForm.
+        /// </summary>
         ~SettingsForm() {}
 
     private:
@@ -126,6 +177,9 @@ namespace TeamAWordle {
         System::Drawing::Color presentColor;
         System::Drawing::Color wrongColor;
 
+        /// <summary>
+        /// Opens color dialog to change the correct letter color.
+        /// </summary>
         void OnCorrectColor_Click(System::Object^ sender, System::EventArgs^ e) {
             System::Windows::Forms::ColorDialog^ dialog = gcnew System::Windows::Forms::ColorDialog();
             dialog->Color = correctColor;
@@ -135,6 +189,9 @@ namespace TeamAWordle {
             }
         }
 
+        /// <summary>
+        /// Opens color dialog to change the present letter color.
+        /// </summary>
         void OnPresentColor_Click(System::Object^ sender, System::EventArgs^ e) {
             System::Windows::Forms::ColorDialog^ dialog = gcnew System::Windows::Forms::ColorDialog();
             dialog->Color = presentColor;
@@ -144,6 +201,9 @@ namespace TeamAWordle {
             }
         }
 
+        /// <summary>
+        /// Opens color dialog to change the wrong letter color.
+        /// </summary>
         void OnWrongColor_Click(System::Object^ sender, System::EventArgs^ e) {
             System::Windows::Forms::ColorDialog^ dialog = gcnew System::Windows::Forms::ColorDialog();
             dialog->Color = wrongColor;

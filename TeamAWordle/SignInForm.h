@@ -7,13 +7,27 @@ namespace TeamAWordle
     using namespace System::Windows::Forms;
     using namespace System::Drawing;
 
-    public ref class UsernameForm : public Form
+    /// <summary>
+    /// Represents a form used to prompt the user for a username before starting the game.
+    /// Includes optional access to modify game settings.
+    /// </summary>
+    public ref class SignInForm : public Form
     {
     public:
+        /// <summary>
+        /// Stores the username entered by the user.
+        /// </summary>
         String^ EnteredUsername;
+
+        /// <summary>
+        /// Label used to display validation or error messages.
+        /// </summary>
         Label^ errorLabel;
 
-        UsernameForm()
+        /// <summary>
+        /// Initializes a new instance of the UsernameForm class and sets up UI elements.
+        /// </summary>
+        SignInForm()
         {
             this->Text = "Sign In to Wordle";
             this->Size = Drawing::Size(300, 200);
@@ -50,7 +64,7 @@ namespace TeamAWordle
             Button^ settingsButton = gcnew Button();
             settingsButton->Text = "Settings";
             settingsButton->Location = Point(170, 70);
-            settingsButton->Click += gcnew EventHandler(this, &UsernameForm::OnSettingsClicked);
+            settingsButton->Click += gcnew EventHandler(this, &SignInForm::OnSettingsClicked);
             this->Controls->Add(settingsButton);
 
             Label^ settingsLabelWarning = gcnew Label();
@@ -67,7 +81,7 @@ namespace TeamAWordle
             this->AcceptButton = okButton;
             this->Controls->Add(okButton);
 
-            this->FormClosing += gcnew FormClosingEventHandler(this, &UsernameForm::OnFormClosing);
+            this->FormClosing += gcnew FormClosingEventHandler(this, &SignInForm::OnFormClosing);
             this->textBox = textBox;
         }
 

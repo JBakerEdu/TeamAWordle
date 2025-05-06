@@ -8,11 +8,23 @@ namespace TeamAWordle
     using namespace System::Windows::Forms;
     using namespace System::Drawing;
 
+	/// <summary>
+    /// Displays the player's game statistics and prompts whether they want to play again.
+    /// </summary>
     public ref class StatsForm : public Form
     {
     public:
+
+        /// <summary>
+        /// Indicates whether the player wants to play another game.
+        /// </summary>
         property bool PlayAgain;
 
+        /// <summary>
+        /// Constructs a new StatsForm to show end-of-game statistics.
+        /// </summary>
+        /// <param name="stats">The PlayerStats object containing statistics to display.</param>
+        /// <param name="gameResultMessage">A message summarizing the game result (win/loss).</param>
         StatsForm(PlayerStats stats, System::String^ gameResultMessage)
         {
             this->Text = "Statistics";
@@ -139,6 +151,12 @@ namespace TeamAWordle
             this->Controls->Add(layout);
         }
     private:
+
+        /// <summary>
+        /// Helper method to create a basic styled label with specified text.
+        /// </summary>
+        /// <param name="text">The label text to display.</param>
+        /// <returns>A configured Label object.</returns>
     	Label^ CreateLabel(String^ text)
     	{
     		Label^ lbl = gcnew Label();
@@ -148,12 +166,22 @@ namespace TeamAWordle
     		return lbl;
     	}
 
+        /// <summary>
+        /// Handles the event when the user clicks "Yes" to play again.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">Event data.</param>
         void OnYesClicked(Object^ sender, EventArgs^ e)
         {
             this->PlayAgain = true;
             this->Close();
         }
 
+        /// <summary>
+        /// Handles the event when the user clicks "No" to exit.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">Event data.</param>
         void OnNoClicked(Object^ sender, EventArgs^ e)
         {
             this->PlayAgain = false;
