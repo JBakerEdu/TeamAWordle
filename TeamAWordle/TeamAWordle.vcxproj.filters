@@ -13,66 +13,90 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Forms">
+      <UniqueIdentifier>{739722dd-0f16-401c-aefc-5270765fbb1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Model">
+      <UniqueIdentifier>{8b8f4e40-f421-4e5e-9b18-be6e5895a1ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Logic">
+      <UniqueIdentifier>{38e08b95-6767-490e-9181-d111573ccfe3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Controllers">
+      <UniqueIdentifier>{b3d0692c-01b3-40ea-b5df-7e1adc683c91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Forms">
+      <UniqueIdentifier>{e1251b20-7865-437c-8ca4-56cbfd0ead6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controllers">
+      <UniqueIdentifier>{0eb90d88-650c-4e02-8cc7-611935a6e900}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Logic">
+      <UniqueIdentifier>{d9cfe695-b56e-48b3-a9de-236d1b97c4fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Model">
+      <UniqueIdentifier>{af93fcf5-82e0-4642-b459-a2b9691500b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainForm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WordList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GuessValidator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameSession.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Forms</Filter>
     </ClCompile>
     <ClCompile Include="SettingsForm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerStats.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Forms</Filter>
     </ClCompile>
     <ClCompile Include="UsernameForm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UserProfile.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Forms</Filter>
     </ClCompile>
     <ClCompile Include="GameModeController.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="GameSession.cpp">
+      <Filter>Source Files\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="GuessValidator.cpp">
+      <Filter>Source Files\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerStats.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="UserProfile.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="WordList.cpp">
+      <Filter>Source Files\Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainForm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WordList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GuessValidator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameSession.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SettingsForm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerStats.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="StatsForm.h">
+      <Filter>Header Files\Forms</Filter>
     </ClInclude>
     <ClInclude Include="UsernameForm.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Forms</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsForm.h">
+      <Filter>Header Files\Forms</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerStats.h">
+      <Filter>Header Files\Model</Filter>
     </ClInclude>
     <ClInclude Include="UserProfile.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Model</Filter>
     </ClInclude>
-    <ClInclude Include="StatsForm.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="WordList.h">
+      <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSession.h">
+      <Filter>Header Files\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="GuessValidator.h">
+      <Filter>Header Files\Logic</Filter>
     </ClInclude>
     <ClInclude Include="GameModeController.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Controllers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
