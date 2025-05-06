@@ -1,5 +1,5 @@
-allowDoubleLetters=False
+allowDoubleLetters=True
 correctColor=-16711936
 presentColor=-138878
 wrongColor=-65536
-gameMode=3
+gameMode=1

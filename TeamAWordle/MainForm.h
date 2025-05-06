@@ -23,7 +23,7 @@ namespace TeamAWordle
     public ref class MainForm : public Form
     {
     public:
-        MainForm(void);
+        MainForm(String^ username);
 
     protected:
         ~MainForm();
@@ -32,9 +32,7 @@ namespace TeamAWordle
         GameSession* session_;
         GameModeController* modeController_;
         UserProfile* user_;
-
         System::ComponentModel::Container^ components;
-
         TableLayoutPanel^ guessGridPanel;
         array<Label^>^ gridLabels;
         Panel^ keyboardPanel;

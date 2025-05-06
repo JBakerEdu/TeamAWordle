@@ -126,7 +126,7 @@
     <ClCompile Include="MainForm.cpp" />
     <ClCompile Include="PlayerStats.cpp" />
     <ClCompile Include="SettingsForm.cpp" />
-    <ClCompile Include="UsernameForm.cpp" />
+    <ClCompile Include="SignInForm.cpp" />
     <ClCompile Include="UserProfile.cpp" />
     <ClCompile Include="WordList.cpp" />
   </ItemGroup>
@@ -140,7 +140,7 @@
     <ClInclude Include="PlayerStats.h" />
     <ClInclude Include="SettingsForm.h" />
     <ClInclude Include="StatsForm.h" />
-    <ClInclude Include="UsernameForm.h" />
+    <ClInclude Include="SignInForm.h" />
     <ClInclude Include="UserProfile.h" />
     <ClInclude Include="WordList.h" />
   </ItemGroup>

@@ -5,7 +5,7 @@
 #include "GameSession.h"
 #include "PlayerStats.h"
 #include "UserProfile.h"
-#include "UsernameForm.h"
+#include "SignInForm.h"
 #include "StatsForm.h"
 #include <iostream>
 #include <Windows.h>
@@ -16,49 +16,51 @@ using namespace System::Windows::Forms;
 [STAThread]
 int main(array<String^>^ args)
 {
-	Application::EnableVisualStyles();
-	Application::SetCompatibleTextRenderingDefault(false);
-	TeamAWordle::MainForm form;
-	Application::Run(% form);
+    Application::EnableVisualStyles();
+    Application::SetCompatibleTextRenderingDefault(false);
+    TeamAWordle::UsernameForm^ prompt = gcnew TeamAWordle::UsernameForm();
+    if (prompt->ShowDialog() != DialogResult::OK)
+    {
+        return 0;
+    }
 
-	return 0;
+    String^ username = prompt->EnteredUsername;
+    Application::Run(gcnew TeamAWordle::MainForm(username));
+
+    return 0;
 }
 
 namespace TeamAWordle {
-    
-    MainForm::MainForm(void)
-    {
-		#ifdef DEBUG_MODE
-			AllocConsole();
-			freopen("CONOUT$", "w", stdout);
-		#endif
-        UsernameForm^ prompt = gcnew UsernameForm();
-        if (prompt->ShowDialog() != System::Windows::Forms::DialogResult::OK)
-        {
-            this->Close();
-            return;
-        }
 
-        System::String^ username = prompt->EnteredUsername;
+    MainForm::MainForm(String^ username)
+    {
+#ifdef DEBUG_MODE
+        AllocConsole();
+        freopen("CONOUT$", "w", stdout);
+#endif
+
         std::string nativeUsername = msclr::interop::marshal_as<std::string>(username);
         user_ = new UserProfile(nativeUsername);
         user_->loadFromFile("Profiles");
 
         InitializeComponent();
+
         allowDoubleLetters_ = SettingsForm::LoadSettingsFromFile();
         SettingsForm::LoadColorsFromFile(correctColor_, presentColor_, wrongColor_);
         selectedMode_ = SettingsForm::LoadGameModeFromFile();
         modeController_ = new GameModeController(selectedMode_);
 
         try {
-            session_ = new GameSession("dictionary.txt");
+            session_ = new GameSession("dictionary.txt", allowDoubleLetters_);
         }
         catch (const std::exception& ex) {
             MessageBox::Show(gcnew String(ex.what()), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
-            Close();
+            this->Close();
             return;
         }
+
         StartNewGame();
+    
     }
 
     MainForm::~MainForm()

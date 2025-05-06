@@ -9,7 +9,7 @@ bool TeamAWordle::SettingsForm::LoadSettingsFromFile() {
     while (std::getline(file, line)) {
         if (line.find("allowDoubleLetters=") == 0) {
             std::string value = line.substr(19);
-            return value == "true";
+            return value == "True";
         }
     }
     return true;
