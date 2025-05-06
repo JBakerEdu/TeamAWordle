@@ -29,7 +29,7 @@ namespace TeamAWordle
         /// </summary>
         SignInForm()
         {
-            this->Text = "Sign In to Wordle";
+            this->Text = "Sign In to Wordle: by Baker and Klamfoth";
             this->Size = Drawing::Size(300, 200);
             this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
             this->StartPosition = FormStartPosition::CenterScreen;

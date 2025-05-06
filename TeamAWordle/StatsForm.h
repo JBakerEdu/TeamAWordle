@@ -27,7 +27,7 @@ namespace TeamAWordle
         /// <param name="gameResultMessage">A message summarizing the game result (win/loss).</param>
         StatsForm(PlayerStats stats, System::String^ gameResultMessage)
         {
-            this->Text = "Statistics";
+            this->Text = "Statistics: by Baker and Klamfoth";
             this->Size = System::Drawing::Size(300, 400);
             this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
             this->StartPosition = FormStartPosition::CenterParent;

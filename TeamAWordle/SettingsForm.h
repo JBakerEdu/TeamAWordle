@@ -121,7 +121,7 @@ namespace TeamAWordle {
             btnPresentColor->BackColor = presentColor;
             btnWrongColor->BackColor = wrongColor;
 
-            this->ClientSize = System::Drawing::Size(240, 335);
+            this->ClientSize = System::Drawing::Size(225, 335);
             this->Text = L"Settings";
             this->AcceptButton = okButton;
             this->CancelButton = cancelButton;
